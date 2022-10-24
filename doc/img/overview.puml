@@ -20,8 +20,10 @@ KinesisDataStreams(eventStream, "Stream", "...")
 Lambda(app1, "Aggregator", "...")
 Lambda(app2, "Component", "...")
 Lambda(app3, "...", "...")
+Lambda(authFunction, "Auth Function", "Bearer token validation")
 
 sources --> api
+api <--> authFunction
 api --> app
 app --> messageStore
 messageStore --> eventStream

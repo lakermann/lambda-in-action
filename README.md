@@ -69,6 +69,10 @@ Then, run
 ```
 npx cdktf get
 ```
+It should show something like this
+```
+Generated typescript constructs in the output directory: .gen
+```
 
 
 ### I get the following error. What should I do? Knex: Timeout acquiring a connection. The pool is probably full. Are you missing a .transacting(trx) call?

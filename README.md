@@ -2,6 +2,8 @@
 
 > Goal: Implement an AWS Lambda application architecture on code from Garfolo's Book «Practical Microservices».
 
+![Overview](./doc/img/overview.png)
+
 ## Resources
 
 * Practical Microservices by Ethan

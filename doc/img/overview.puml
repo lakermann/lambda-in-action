@@ -1,0 +1,31 @@
+@startuml Overview
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
+!include AWSPuml/AWSCommon.puml
+!include AWSPuml/General/Users.puml
+!include AWSPuml/ApplicationIntegration/APIGateway.puml
+!include AWSPuml/Analytics/KinesisDataStreams.puml
+!include AWSPuml/Compute/Lambda.puml
+!include AWSPuml/Database/DynamoDB.puml
+
+left to right direction
+
+title "Overview"
+
+Users(sources, "Users", "...")
+APIGateway(api, "API", "...")
+Lambda(app, "App", "...")
+DynamoDB(eventStore, "Messages Table", "...")
+KinesisDataStreams(eventStream, "Stream", "...")
+Lambda(app1, "Aggregator", "...")
+Lambda(app2, "Component", "...")
+Lambda(app3, "...", "...")
+
+sources --> api
+api --> app
+app --> eventStore
+eventStore --> eventStream
+eventStream --> app1
+eventStream --> app2
+eventStream --> app3
+@enduml

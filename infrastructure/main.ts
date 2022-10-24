@@ -63,6 +63,16 @@ class MyStack extends TerraformStack {
             handler: 'index.handler',
             runtime: 'nodejs16.x'
         });
+
+        new aws.dynamodbTable.DynamodbTable(this, 'messages-table-dynamodb', {
+            name: "messages-sam",
+            billingMode: "PAY_PER_REQUEST",
+            hashKey: "id",
+            attribute: [{
+                name: "id",
+                type: "S"
+            }]
+        })
     }
 }
 

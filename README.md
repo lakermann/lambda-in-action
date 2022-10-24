@@ -74,6 +74,17 @@ It should show something like this
 Generated typescript constructs in the output directory: .gen
 ```
 
+### How can I deploy changes
+
+Generates a diff by running Terraform plan:
+```
+npx cdktf diff
+```
+
+Deploy:
+```
+npx cdktf deploy
+```
 
 ### I get the following error. What should I do? Knex: Timeout acquiring a connection. The pool is probably full. Are you missing a .transacting(trx) call?
 

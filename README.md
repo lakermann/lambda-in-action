@@ -57,6 +57,18 @@ nvm use
 ```
 To use nvm, you may have to configure some additional steps, see https://formulae.brew.sh/formula/nvm
 
+### How can I test whether my CDK for Terraform setup is correct?
+
+First, ensure you have all dependencies installed by running
+```
+npm install
+```
+in the infrastructure folder.
+
+Then, run 
+```
+npx cdktf get
+```
 
 
 ### I get the following error. What should I do? Knex: Timeout acquiring a connection. The pool is probably full. Are you missing a .transacting(trx) call?

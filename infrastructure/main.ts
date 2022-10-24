@@ -2,6 +2,7 @@ import {Construct} from "constructs";
 import {App, AssetType, S3Backend, TerraformAsset, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
+import * as random from "@cdktf/provider-random"
 import * as path from "path";
 
 const lambdaRolePolicy = {
@@ -25,6 +26,9 @@ class MyStack extends TerraformStack {
         // define resources here
         const awsProvider = new aws.provider.AwsProvider(this, 'aws', {
             region: 'us-east-1'
+        });
+
+        new random.provider.RandomProvider(this, 'random', {
         });
 
         // S3 backend
@@ -72,6 +76,20 @@ class MyStack extends TerraformStack {
                 name: "id",
                 type: "S"
             }]
+        })
+
+        const apiKey = new random.password.Password(this, 'api-key', {
+            length: 16,
+            special: false
+        });
+
+        const apiKeySecret = new aws.secretsmanagerSecret.SecretsmanagerSecret(this, 'api-key-secret', {
+            name: 'api-key'
+        });
+
+        new aws.secretsmanagerSecretVersion.SecretsmanagerSecretVersion(this, 'api-key-secret-v1', {
+            secretId: apiKeySecret.id,
+            secretString: apiKey.result
         })
     }
 }

@@ -31,17 +31,33 @@ aws_secret_access_key=<secret>
 
 ### What Terraform version should I use?
 
-We have used Terraform 1.3.3 while we have experimented with this code. So, this will most likely the most suitable version to use.
+We have used Terraform 1.3.3 while we have experimented with this code. So, this will most likely be the most suitable version to use.
 
 Hint: You can use tfenv https://github.com/tfutils/tfenv to manage Terraform versions. Install with
 ```
 brew install tfenv
 ```
-on Mac and then install the Terraform version using
+on Mac and then activate the Terraform version using
 ```
-tfenv install
+tfenv use
 ```
 (this will use the .terraform-version file).
+
+### What Node version should I use?
+
+We have used Node v16.18.0 while we have experimented with this code. So, this will most likely be the most suitable version to use.
+
+Hint: You can use nvm https://github.com/nvm-sh/nvm to manage Node installations. Install with
+```
+brew install nvm 
+```
+on Mac and then activate the Node version using
+```
+nvm use
+```
+To use nvm, you may have to configure some additional steps, see https://formulae.brew.sh/formula/nvm
+
+
 
 ### I get the following error. What should I do? Knex: Timeout acquiring a connection. The pool is probably full. Are you missing a .transacting(trx) call?
 

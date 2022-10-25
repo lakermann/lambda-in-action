@@ -12,20 +12,22 @@ left to right direction
 
 title "Overview"
 
-Users(sources, "Users", "...")
-APIGateway(api, "API", "...")
-Lambda(app, "App", "...")
+Users(users, "Users", "...")
+APIGateway(apiGateway, "API", "...")
+Lambda(appRecordViewings, "record-viewings", "record video viewings")
 DynamoDB(messageStore, "Message Store", "message table")
 KinesisDataStreams(eventStream, "Stream", "...")
 Lambda(app1, "Aggregator", "...")
 Lambda(app2, "Component", "...")
 Lambda(app3, "...", "...")
-Lambda(authFunction, "Auth Function", "Bearer token validation")
+Lambda(appApiTest, "api-test", "hello from lambda")
+Lambda(authorizer, "authorizer", "bearer token validation")
 
-sources --> api
-api <--> authFunction
-api --> app
-app --> messageStore
+users --> apiGateway
+apiGateway --> authorizer
+apiGateway --> appApiTest
+apiGateway --> appRecordViewings
+appRecordViewings --> messageStore
 messageStore --> eventStream
 eventStream --> app1
 eventStream --> app2

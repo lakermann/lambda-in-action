@@ -6,6 +6,7 @@ import * as random from "@cdktf/provider-random"
 import MyLambdaStack from "./stacks/my-lambda-stack";
 import * as path from "path";
 import MyBaseInfraStack from "./stacks/my-base-infra-stack";
+import MyDynamodbTableStack from "./stacks/my-dynamodb-table-stack";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -30,16 +31,10 @@ class MyStack extends TerraformStack {
 
         const assetPath = path.resolve(__dirname, '../test');
         new MyLambdaStack(this, 'l-test', myBaseInfra.s3Bucket, myBaseInfra.role, assetPath);
-
-        new aws.dynamodbTable.DynamodbTable(this, 'messages-table-dynamodb', {
-            name: "messages",
-            billingMode: "PAY_PER_REQUEST",
-            hashKey: "id",
-            attribute: [{
-                name: "id",
-                type: "S"
-            }]
-        })
+        new MyDynamodbTableStack(this, "messages", "id", [{
+            name: "id",
+            type: "S"
+        }])
 
         const apiKey = new random.password.Password(this, 'api-key', {
             length: 16,

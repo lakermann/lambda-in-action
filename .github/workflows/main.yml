@@ -24,8 +24,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install application dependencies
+        run: npm ci
+        working-directory: ./application
+
+      - name: Run application tests
+        run: npm test
+        working-directory: ./application
+
+      - name: Install infrastructure dependencies
+        run: npm ci
         working-directory: ./infrastructure
 
       - name: Generate module and provider bindings

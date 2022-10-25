@@ -7,6 +7,7 @@ import MyLambdaStack from "./stacks/my-lambda-stack";
 import * as path from "path";
 import MyBaseInfraStack from "./stacks/my-base-infra-stack";
 import MyDynamodbTableStack from "./stacks/my-dynamodb-table-stack";
+import {Api} from "./constructs/api";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -17,8 +18,7 @@ class MyStack extends TerraformStack {
             region: 'us-east-1'
         });
 
-        new random.provider.RandomProvider(this, 'random', {
-        });
+        new random.provider.RandomProvider(this, 'random', {});
 
         // S3 backend
         new S3Backend(this, {
@@ -49,6 +49,8 @@ class MyStack extends TerraformStack {
             secretId: apiKeySecret.id,
             secretString: apiKey.result
         })
+
+        new Api(this, 'authoizer-config');
     }
 }
 

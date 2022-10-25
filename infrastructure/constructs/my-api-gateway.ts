@@ -7,12 +7,12 @@ import {DataAwsCloudwatchLogGroup} from "@cdktf/provider-aws/lib/data-aws-cloudw
 import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission";
 
 
-export class ApiGateway extends Construct {
+export class MyApiGateway extends Construct {
     readonly api: Apigatewayv2Api;
     readonly authorizer: Apigatewayv2Authorizer;
 
-    constructor(scope: Construct, name: string, authorizerFunction: DataAwsLambdaFunction) {
-        super(scope, name);
+    constructor(scope: Construct, id: string, authorizerFunction: DataAwsLambdaFunction) {
+        super(scope, id);
 
         this.api = new Apigatewayv2Api(this, 'lambda-in-action', {
             name: 'lambda-in-action',

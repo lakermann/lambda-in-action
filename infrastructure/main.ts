@@ -1,23 +1,11 @@
 import {Construct} from "constructs";
-import {App, AssetType, S3Backend, TerraformAsset, TerraformStack} from "cdktf";
+import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
+import MyLambdaStack from "./stacks/my-lambda-stack";
 import * as path from "path";
-
-const lambdaRolePolicy = {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": "sts:AssumeRole",
-            "Principal": {
-                "Service": "lambda.amazonaws.com"
-            },
-            "Effect": "Allow",
-            "Sid": ""
-        }
-    ]
-};
+import MyBaseInfraStack from "./stacks/my-base-infra-stack";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -38,38 +26,13 @@ class MyStack extends TerraformStack {
             region: awsProvider.region,
         });
 
-        const s3Bucket = new aws.s3Bucket.S3Bucket(this, 'code', {
-            bucket: 'lambda-in-action-code',
-        });
+        const myBaseInfra = new MyBaseInfraStack(this);
 
-        const asset = new TerraformAsset(this, "ta-test-lambda", {
-            path: path.resolve(__dirname, '../test'),
-            type: AssetType.ARCHIVE, // if left empty it infers directory and file
-        });
-
-        const s3Object = new aws.s3Object.S3Object(this, "object-test-lambda", {
-            bucket: s3Bucket.bucket,
-            key: `l-test/${asset.fileName}`,
-            source: asset.path,
-        });
-
-        const role = new aws.iamRole.IamRole(this, "role-test-lambda", {
-            name: `test-lambda`,
-            assumeRolePolicy: JSON.stringify(lambdaRolePolicy)
-        });
-
-        new aws.lambdaFunction.LambdaFunction(this, 'l-test', {
-            functionName: 'l-test',
-            role: role.arn,
-            s3Bucket: s3Bucket.bucket,
-            s3Key: s3Object.key,
-
-            handler: 'index.handler',
-            runtime: 'nodejs16.x'
-        });
+        const assetPath = path.resolve(__dirname, '../test');
+        new MyLambdaStack(this, 'l-test', myBaseInfra.s3Bucket, myBaseInfra.role, assetPath);
 
         new aws.dynamodbTable.DynamodbTable(this, 'messages-table-dynamodb', {
-            name: "messages-sam",
+            name: "messages",
             billingMode: "PAY_PER_REQUEST",
             hashKey: "id",
             attribute: [{

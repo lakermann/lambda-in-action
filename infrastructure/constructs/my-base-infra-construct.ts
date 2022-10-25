@@ -16,16 +16,18 @@ const lambdaRolePolicy = {
 };
 
 
-export default class MyBaseInfraStack {
+export default class MyBaseInfraConstruct extends Construct {
     s3Bucket: aws.s3Bucket.S3Bucket;
     role: aws.iamRole.IamRole;
 
-    constructor(scope: Construct) {
-        this.s3Bucket = new aws.s3Bucket.S3Bucket(scope, 'code', {
+    constructor(scope: Construct, name: string) {
+        super(scope, name);
+
+        this.s3Bucket = new aws.s3Bucket.S3Bucket(this, 'code', {
             bucket: 'lambda-in-action-code',
         });
 
-        this.role = new aws.iamRole.IamRole(scope, "role-test-lambda", {
+        this.role = new aws.iamRole.IamRole(this, "role-test-lambda", {
             name: `test-lambda`,
             assumeRolePolicy: JSON.stringify(lambdaRolePolicy)
         });

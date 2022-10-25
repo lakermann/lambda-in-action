@@ -22,8 +22,6 @@ describe('RecordViewingsHandler', () => {
     });
 
     test('missing videoId fails and API call returns status 400', () => {
-
-        documentClientPutMock.mockRejectedValue(new Error('DynamoDB call failed'));
         const event = createTestEvent(undefined, 'test-trace-id', 'test-user-id');
         const apiGatewayProxyResultPromise = handler(event);
 
@@ -38,13 +36,19 @@ describe('RecordViewingsHandler', () => {
 
     test('message saving in DynamoDB fails and API call returns status 500', () => {
 
-        documentClientPutMock.mockRejectedValue(new Error('DynamoDB call failed'));
+        //documentClientPutMock.mockRejectedValue(new Error('DynamoDB call failed'));
+        documentClientPutMock.mockImplementation(() => {
+            return {
+                promise() {
+                    return Promise.reject(new Error('DynamoDB call failed'));
+                }
+            };
+        })
         const event = createTestEvent('test-video-id', 'test-trace-id', 'test-user-id');
         const apiGatewayProxyResultPromise = handler(event);
 
-        // TODO: Something with the error handling in the code is not right yet, body should contain error message
         return expect(apiGatewayProxyResultPromise).resolves.toEqual({
-            body: "{}",
+            body: "{\"message\":\"DynamoDB call failed\"}",
             headers: {
                 "content-type": "application/json"
             },
@@ -53,7 +57,13 @@ describe('RecordViewingsHandler', () => {
     });
 
     test('message is saved in DynamoDB and API call returns successfully', () => {
-        documentClientPutMock.mockResolvedValue('');
+        documentClientPutMock.mockImplementation(() => {
+            return {
+                promise() {
+                    return Promise.resolve({});
+                }
+            };
+        })
 
         const event = createTestEvent('test-video-id', 'test-trace-id', 'test-user-id');
         const apiGatewayProxyResultPromise = handler(event);

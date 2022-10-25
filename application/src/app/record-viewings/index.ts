@@ -39,7 +39,7 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: APIGat
             .put({
                 TableName: "messages", // TODO: Extract als environment variable?
                 Item: videoViewedEvent
-            });
+            }).promise();
 
         return {
             statusCode: 200,
@@ -53,7 +53,9 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: APIGat
         return {
             statusCode: 500,
             headers: {"content-type": "application/json"},
-            body: JSON.stringify(error),
+            body: JSON.stringify({
+                message: error.message,
+            }),
         };
     }
 };

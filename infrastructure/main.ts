@@ -7,7 +7,8 @@ import MyLambdaStack from "./stacks/my-lambda-stack";
 import * as path from "path";
 import MyBaseInfraStack from "./stacks/my-base-infra-stack";
 import MyDynamodbTableStack from "./stacks/my-dynamodb-table-stack";
-import {Api} from "./constructs/api";
+import {ApiLambda} from "./constructs/api-lambda";
+import {ApiGateway} from "./constructs/api-gateway";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -50,7 +51,13 @@ class MyStack extends TerraformStack {
             secretString: apiKey.result
         })
 
-        new Api(this, 'authoizer-config');
+        const apiGateway = new ApiGateway(this, 'authoizer-config');
+
+        new ApiLambda(this, 'test', {
+            apiId: apiGateway.api.id,
+            apiExecutionArn: apiGateway.api.executionArn,
+            authorizerId: apiGateway.authorizer.id,
+        });
     }
 }
 

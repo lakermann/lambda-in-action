@@ -5,10 +5,9 @@
     "serverless-typescript-demo": "bin/serverless-typescript-demo.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npx esbuild --bundle src/*/*/index.ts --outdir=dist --outbase=src/ --sourcemap=inline --platform=node",
     "watch": "tsc -w",
-    "test": "jest",
-    "cdk": "cdk"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.86",

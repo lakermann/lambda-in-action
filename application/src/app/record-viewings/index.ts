@@ -1,46 +1,66 @@
-const AWS = require("aws-sdk");
+import {APIGatewayProxyEvent, APIGatewayProxyResult} from "aws-lambda";
+import {logger} from "../../powertools/utitlities";
+import {DynamoDB} from 'aws-sdk';
 
-const dynamo = new AWS.DynamoDB.DocumentClient();
+import {v4 as uuid} from 'uuid';
 
-exports.handler = async (event, context) => {
-    let body;
-    let statusCode = 200;
-    const headers = {
-        "Content-Type": "application/json"
-    };
+const dynamo: DynamoDB.DocumentClient = new DynamoDB.DocumentClient();
 
-    try {
-        let requestJSON = event.body
-        await dynamo
-            .put({
-                TableName: "messages-sam",
-                Item: {
-                    id: requestJSON.id,
-                    type: requestJSON.type,
-                    metadata: {
-                        traceId: requestJSON.metadata.traceId,
-                        userId: requestJSON.metadata.userId
-                    },
-                    data: {
-                        ownerId: requestJSON.data.ownerId,
-                        sourceUri: requestJSON.data.sourceUri,
-                        videoId: requestJSON.data.videoId
-                    }
-                }
-            })
-            .promise();
-        body = `Put item ${requestJSON.id}`;
+const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const videoId = event.pathParameters!.videoId;
+    if (videoId === undefined) {
+        logger.warn('Missing \'videoId\' parameter in path while trying to create a product', {
+            details: {eventPathParameters: event.pathParameters}
+        });
 
-    } catch (err) {
-        statusCode = 400;
-        body = err.message;
-    } finally {
-        body = JSON.stringify(body);
+        return {
+            statusCode: 400,
+            headers: {"content-type": "application/json"},
+            body: JSON.stringify({message: "Missing 'videoId' parameter in path"}),
+        };
     }
 
-    return {
-        statusCode,
-        body,
-        headers
-    };
+    try {
+        const traceId = event.headers.traceId;
+        const userId = event.headers.userId;
+        let videoViewedEvent = {
+            id: uuid(),
+            type: 'VideoViewed',
+            metadata: {
+                traceId: traceId,
+                userId: userId
+            },
+            data: {
+                userId: userId,
+                videoId: videoId
+            }
+        };
+        await dynamo
+            .put({
+                TableName: "messages", // TODO: Extract als environment variable?
+                Item: videoViewedEvent
+            });
+
+        return {
+            statusCode: 200,
+            headers: {"content-type": "application/json"},
+            body: "",
+        };
+
+    } catch (error) {
+        logger.error('Unexpected error occurred while trying to record a view', error);
+
+        return {
+            statusCode: 500,
+            headers: {"content-type": "application/json"},
+            body: JSON.stringify(error),
+        };
+    }
+};
+
+const handler = handlerCreator(dynamo);
+
+export {
+    handlerCreator,
+    handler
 };

@@ -9,6 +9,7 @@ import {ApiGateway} from "./constructs/api-gateway";
 import MyLambdaConstruct from "./constructs/my-lambda-construct";
 import MyDynamodbTableConstruct from "./constructs/my-dynamodb-table-construct";
 import MyBaseInfraConstruct from "./constructs/my-base-infra-construct";
+import {DataAwsLambdaFunction} from "@cdktf/provider-aws/lib/data-aws-lambda-function";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -31,7 +32,11 @@ class MyStack extends TerraformStack {
         const myBaseInfra = new MyBaseInfraConstruct(this, 'base-infra');
 
         const assetPath = path.resolve(__dirname, '../test');
-        new MyLambdaConstruct(this, 'l-test', myBaseInfra.s3Bucket, myBaseInfra.role, assetPath);
+        new MyLambdaConstruct(this, 'l-test', {
+            s3Bucket: myBaseInfra.s3Bucket,
+            role: myBaseInfra.lambdaRole,
+            assetPath
+        });
         new MyDynamodbTableConstruct(this, "messages", "id", [{
             name: "id",
             type: "S"
@@ -51,7 +56,11 @@ class MyStack extends TerraformStack {
             secretString: apiKey.result
         })
 
-        const apiGateway = new ApiGateway(this, 'authorizer-config');
+        const authorizerFunction = new DataAwsLambdaFunction(this, 'fun-authorizer', {
+            functionName: 'authorizer',
+        });
+
+        const apiGateway = new ApiGateway(this, 'authorizer-config', authorizerFunction);
 
         new ApiLambda(this, 'test', {
             apiId: apiGateway.api.id,

@@ -11,16 +11,12 @@ export class ApiGateway extends Construct {
     readonly api: Apigatewayv2Api;
     readonly authorizer: Apigatewayv2Authorizer;
 
-    constructor(scope: Construct, name: string) {
+    constructor(scope: Construct, name: string, authorizerFunction: DataAwsLambdaFunction) {
         super(scope, name);
 
         this.api = new Apigatewayv2Api(this, 'lambda-in-action', {
             name: 'lambda-in-action',
             protocolType: 'HTTP',
-        });
-
-        const authorizerFunction = new DataAwsLambdaFunction(this, 'fun-authorizer', {
-            functionName: 'authorizer',
         });
 
         this.authorizer = new Apigatewayv2Authorizer(this, 'api-authorizer', {

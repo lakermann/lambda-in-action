@@ -3,12 +3,11 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
-import MyLambdaStack from "./stacks/my-lambda-stack";
-import * as path from "path";
-import MyBaseInfraStack from "./stacks/my-base-infra-stack";
-import MyDynamodbTableStack from "./stacks/my-dynamodb-table-stack";
-import {ApiLambda} from "./constructs/api-lambda";
 import {ApiGateway} from "./constructs/api-gateway";
+import MyDynamodbTableConstruct from "./constructs/my-dynamodb-table-construct";
+import MyBaseInfraConstruct from "./constructs/my-base-infra-construct";
+import {DataAwsLambdaFunction} from "@cdktf/provider-aws/lib/data-aws-lambda-function";
+import MyLambdaAppConstruct from "./constructs/my-lambda-app-construct";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -28,11 +27,9 @@ class MyStack extends TerraformStack {
             region: awsProvider.region,
         });
 
-        const myBaseInfra = new MyBaseInfraStack(this);
+        const myBaseInfra = new MyBaseInfraConstruct(this, 'base-infra');
 
-        const assetPath = path.resolve(__dirname, '../test');
-        new MyLambdaStack(this, 'l-test', myBaseInfra.s3Bucket, myBaseInfra.role, assetPath);
-        new MyDynamodbTableStack(this, "messages", "id", [{
+        new MyDynamodbTableConstruct(this, "messages", "id", [{
             name: "id",
             type: "S"
         }])
@@ -51,9 +48,29 @@ class MyStack extends TerraformStack {
             secretString: apiKey.result
         })
 
-        const apiGateway = new ApiGateway(this, 'authoizer-config');
+        const authorizerFunction = new DataAwsLambdaFunction(this, 'fun-authorizer', {
+            functionName: 'authorizer',
+        });
 
-        new ApiLambda(this, 'test', {
+        const apiGateway = new ApiGateway(this, 'authorizer-config', authorizerFunction);
+
+        const apiTestAppName = 'api-test';
+        new MyLambdaAppConstruct(this, `my-lambda-app-construct-${apiTestAppName}`, {
+            name: apiTestAppName,
+            routeKey: 'GET /test',
+            s3Bucket: myBaseInfra.s3Bucket,
+            role: myBaseInfra.lambdaRole,
+            apiId: apiGateway.api.id,
+            apiExecutionArn: apiGateway.api.executionArn,
+            authorizerId: apiGateway.authorizer.id,
+        });
+
+        const recordViewingsAppName = 'record-viewings';
+        new MyLambdaAppConstruct(this, `my-lambda-app-construct-${recordViewingsAppName}`, {
+            name: recordViewingsAppName,
+            routeKey: 'POST /videos/{videoId}',
+            s3Bucket: myBaseInfra.s3Bucket,
+            role: myBaseInfra.lambdaRole,
             apiId: apiGateway.api.id,
             apiExecutionArn: apiGateway.api.executionArn,
             authorizerId: apiGateway.authorizer.id,

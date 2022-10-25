@@ -1,13 +1,13 @@
-name: "Apply Stack after PR is Merged"
+name: "Test and diff stack"
 
 on:
   push:
     branches:
-      - main
+      - 'feature/**'
 
 jobs:
   terraform:
-    name: "Terraform CDK Deploy"
+    name: "Terraform CDK Diff"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,6 +44,6 @@ jobs:
         run: npx cdktf-cli get
         working-directory: ./infrastructure
 
-      - name: Deploy
-        run: npx cdktf deploy --auto-approve
+      - name: Diff
+        run: npx cdktf diff
         working-directory: ./infrastructure

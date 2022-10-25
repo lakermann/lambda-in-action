@@ -4,7 +4,6 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
 import * as path from "path";
-import {ApiLambda} from "./constructs/api-lambda";
 import {ApiGateway} from "./constructs/api-gateway";
 import MyLambdaConstruct from "./constructs/my-lambda-construct";
 import MyDynamodbTableConstruct from "./constructs/my-dynamodb-table-construct";
@@ -62,12 +61,6 @@ class MyStack extends TerraformStack {
         });
 
         const apiGateway = new ApiGateway(this, 'authorizer-config', authorizerFunction);
-
-        new ApiLambda(this, 'test', {
-            apiId: apiGateway.api.id,
-            apiExecutionArn: apiGateway.api.executionArn,
-            authorizerId: apiGateway.authorizer.id,
-        });
 
         const recordViewingsAppName = 'record-viewings';
         new MyLambdaAppConstruct(this, `my-lambda-app-construct-${recordViewingsAppName}`, {

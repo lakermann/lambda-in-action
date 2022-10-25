@@ -37,7 +37,7 @@ export default class MyLambdaAppConstruct extends Construct {
         });
 
         const lambdaFunction = new aws.lambdaFunction.LambdaFunction(this, `lambda-function-${functionName}`, {
-            functionName: 'functionName',
+            functionName: functionName,
             role: config.role.arn,
             s3Bucket: config.s3Bucket.bucket,
             s3Key: s3Object.key,
@@ -49,7 +49,7 @@ export default class MyLambdaAppConstruct extends Construct {
 
         // TODO: extract into api-lambda construct?
         new LambdaPermission(this, `lambda-permission-${functionName}`, {
-            functionName: functionName,
+            functionName: lambdaFunction.functionName,
             action: 'lambda:InvokeFunction',
             principal: 'apigateway.amazonaws.com',
             sourceArn: `${config.apiExecutionArn}/*`,

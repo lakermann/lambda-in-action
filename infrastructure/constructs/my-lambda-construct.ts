@@ -1,4 +1,4 @@
-import {AssetType, TerraformAsset} from "cdktf";
+import {AssetType, Fn, TerraformAsset} from "cdktf";
 import {Construct} from "constructs";
 import * as aws from "@cdktf/provider-aws";
 
@@ -29,6 +29,7 @@ export default class MyLambdaConstruct extends Construct {
             s3Bucket: config.s3Bucket.bucket,
             s3Key: s3Object.key,
 
+            sourceCodeHash: Fn.filebase64sha256(asset.path),
             handler: 'index.handler',
             runtime: 'nodejs16.x'
         });

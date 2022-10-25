@@ -6,24 +6,27 @@ import {Apigatewayv2Stage} from "@cdktf/provider-aws/lib/apigatewayv2-stage";
 import {DataAwsCloudwatchLogGroup} from "@cdktf/provider-aws/lib/data-aws-cloudwatch-log-group";
 import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission";
 
+export interface MyApiGatewayConfig {
+    authorizerFunction: DataAwsLambdaFunction
+}
 
 export class MyApiGateway extends Construct {
     readonly api: Apigatewayv2Api;
     readonly authorizer: Apigatewayv2Authorizer;
 
-    constructor(scope: Construct, id: string, authorizerFunction: DataAwsLambdaFunction) {
+    constructor(scope: Construct, id: string, config: MyApiGatewayConfig) {
         super(scope, id);
 
-        this.api = new Apigatewayv2Api(this, 'lambda-in-action', {
+        this.api = new Apigatewayv2Api(this, `api-gateway-v2-api-${id}`, {
             name: 'lambda-in-action',
             protocolType: 'HTTP',
         });
 
-        this.authorizer = new Apigatewayv2Authorizer(this, 'api-authorizer', {
+        this.authorizer = new Apigatewayv2Authorizer(this, `api-gateway-v2-authorizer-${id}`, {
             name: 'api-key',
             apiId: this.api.id,
             authorizerType: 'REQUEST',
-            authorizerUri: authorizerFunction.invokeArn,
+            authorizerUri: config.authorizerFunction.invokeArn,
             identitySources: [
                 '$request.header.X-Api-Key'
             ],
@@ -31,8 +34,8 @@ export class MyApiGateway extends Construct {
             authorizerPayloadFormatVersion: '2.0',
         });
 
-        new LambdaPermission(this, 'invokeForApiGateway', {
-            functionName: authorizerFunction.functionName,
+        new LambdaPermission(this, `api-gateway-authorizer-lambda-permission-${id}`, {
+            functionName: config.authorizerFunction.functionName,
             action: 'lambda:InvokeFunction',
             principal: 'apigateway.amazonaws.com',
             sourceArn: `${this.api.executionArn}/authorizers/${this.authorizer.id}`,
@@ -42,7 +45,7 @@ export class MyApiGateway extends Construct {
             name: 'api-gateway-access-logging'
         });
 
-        new Apigatewayv2Stage(this, 'stage', {
+        new Apigatewayv2Stage(this, `api-gateway-v2-stage-${id}`, {
             apiId: this.api.id,
             name: '$default',
             autoDeploy: true,

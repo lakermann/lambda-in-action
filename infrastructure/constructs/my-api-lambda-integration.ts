@@ -25,14 +25,14 @@ export default class MyApiLambdaIntegration extends Construct {
             sourceArn: `${config.apiExecutionArn}/*`,
         });
 
-        const apigatewayv2Integration = new Apigatewayv2Integration(this, `apigateway-v2-integration-${id}`, {
+        const apigatewayv2Integration = new Apigatewayv2Integration(this, `api-gateway-v2-integration-${id}`, {
             apiId: config.apiId,
             integrationType: 'AWS_PROXY',
             connectionType: 'INTERNET',
             integrationUri: lambdaFunction.invokeArn,
         });
 
-        new Apigatewayv2Route(this, `apigateway-v2-route-${id}`, {
+        new Apigatewayv2Route(this, `api-gateway-v2-route-${id}`, {
             apiId: config.apiId,
             routeKey: config.routeKey,
             target: `integrations/${apigatewayv2Integration.id}`,

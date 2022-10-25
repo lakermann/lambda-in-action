@@ -52,7 +52,9 @@ class MyStack extends TerraformStack {
             functionName: 'authorizer',
         });
 
-        const apiGateway = new MyApiGateway(this, 'authorizer-config', authorizerFunction);
+        const apiGateway = new MyApiGateway(this, 'authorizer-config', {
+            authorizerFunction: authorizerFunction
+        });
 
         const apiTestAppName = 'api-test';
         new MyLambdaApp(this, `my-lambda-app-construct-${apiTestAppName}`, {

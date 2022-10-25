@@ -3,9 +3,7 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
-import * as path from "path";
 import {ApiGateway} from "./constructs/api-gateway";
-import MyLambdaConstruct from "./constructs/my-lambda-construct";
 import MyDynamodbTableConstruct from "./constructs/my-dynamodb-table-construct";
 import MyBaseInfraConstruct from "./constructs/my-base-infra-construct";
 import {DataAwsLambdaFunction} from "@cdktf/provider-aws/lib/data-aws-lambda-function";
@@ -31,12 +29,6 @@ class MyStack extends TerraformStack {
 
         const myBaseInfra = new MyBaseInfraConstruct(this, 'base-infra');
 
-        const assetPath = path.resolve(__dirname, '../test');
-        new MyLambdaConstruct(this, 'l-test', {
-            s3Bucket: myBaseInfra.s3Bucket,
-            role: myBaseInfra.lambdaRole,
-            assetPath
-        });
         new MyDynamodbTableConstruct(this, "messages", "id", [{
             name: "id",
             type: "S"
@@ -62,10 +54,21 @@ class MyStack extends TerraformStack {
 
         const apiGateway = new ApiGateway(this, 'authorizer-config', authorizerFunction);
 
+        const apiTestAppName = 'api-test';
+        new MyLambdaAppConstruct(this, `my-lambda-app-construct-${apiTestAppName}`, {
+            name: apiTestAppName,
+            routeKey: 'GET /test',
+            s3Bucket: myBaseInfra.s3Bucket,
+            role: myBaseInfra.lambdaRole,
+            apiId: apiGateway.api.id,
+            apiExecutionArn: apiGateway.api.executionArn,
+            authorizerId: apiGateway.authorizer.id,
+        });
+
         const recordViewingsAppName = 'record-viewings';
         new MyLambdaAppConstruct(this, `my-lambda-app-construct-${recordViewingsAppName}`, {
             name: recordViewingsAppName,
-            routeKey: 'POST /{videoId}',
+            routeKey: 'POST /videos/{videoId}',
             s3Bucket: myBaseInfra.s3Bucket,
             role: myBaseInfra.lambdaRole,
             apiId: apiGateway.api.id,

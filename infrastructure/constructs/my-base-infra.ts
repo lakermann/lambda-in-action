@@ -1,9 +1,8 @@
 import * as aws from "@cdktf/provider-aws";
 import {Construct} from "constructs";
 import {MyApiGateway} from "./my-api-gateway";
-import MyLambda from "./my-lambda";
-import * as path from "path";
 import MyApiSecret from "./my-api-secret";
+import {MyAuthorizerFunction} from "./my-authorizer-function";
 
 const lambdaRolePolicy = {
     "Version": "2012-10-17",
@@ -36,18 +35,15 @@ export default class MyBaseInfra extends Construct {
             assumeRolePolicy: JSON.stringify(lambdaRolePolicy)
         });
 
-        new MyApiSecret(this, `${id}-my-api-secret`);
+        const myApiSecret = new MyApiSecret(this, `${id}-my-api-secret`);
 
-        const authorizerAssetSourcePath = path.resolve(__dirname, '../../application/src/authorizer');
-        const authorizerFunction = new MyLambda(this, `${id}-api-authorizer-function`, {
-            functionName: 'api-authorizer-function',
-            assetSourcePath: authorizerAssetSourcePath,
+        const myAuthorizerFunction = new MyAuthorizerFunction(this, `${id}-my-authorizer-function`, {
             s3Bucket: this.s3Bucket,
-            role: this.lambdaRole
+            apiKeyArn: myApiSecret.apiKeyArn,
         });
 
         this.apiGateway = new MyApiGateway(this, `${id}-my-api-gateway`, {
-            authorizerFunction: authorizerFunction.lambdaFunction
+            authorizerFunction: myAuthorizerFunction.authorizerFunction
         });
     }
 }

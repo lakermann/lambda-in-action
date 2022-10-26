@@ -3,11 +3,11 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
-import {ApiGateway} from "./constructs/api-gateway";
-import MyDynamodbTableConstruct from "./constructs/my-dynamodb-table-construct";
-import MyBaseInfraConstruct from "./constructs/my-base-infra-construct";
+import {MyApiGateway} from "./constructs/my-api-gateway";
+import MyDynamodbTable from "./constructs/my-dynamodb-table";
+import MyBaseInfra from "./constructs/my-base-infra";
 import {DataAwsLambdaFunction} from "@cdktf/provider-aws/lib/data-aws-lambda-function";
-import MyLambdaAppConstruct from "./constructs/my-lambda-app-construct";
+import MyLambdaApp from "./constructs/my-lambda-app";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, name: string) {
@@ -27,9 +27,9 @@ class MyStack extends TerraformStack {
             region: awsProvider.region,
         });
 
-        const myBaseInfra = new MyBaseInfraConstruct(this, 'base-infra');
+        const myBaseInfra = new MyBaseInfra(this, 'base-infra');
 
-        new MyDynamodbTableConstruct(this, "messages", "id", [{
+        new MyDynamodbTable(this, "messages", "id", [{
             name: "id",
             type: "S"
         }])
@@ -52,10 +52,12 @@ class MyStack extends TerraformStack {
             functionName: 'authorizer',
         });
 
-        const apiGateway = new ApiGateway(this, 'authorizer-config', authorizerFunction);
+        const apiGateway = new MyApiGateway(this, 'authorizer-config', {
+            authorizerFunction: authorizerFunction
+        });
 
         const apiTestAppName = 'api-test';
-        new MyLambdaAppConstruct(this, `my-lambda-app-construct-${apiTestAppName}`, {
+        new MyLambdaApp(this, `my-lambda-app-construct-${apiTestAppName}`, {
             name: apiTestAppName,
             routeKey: 'GET /test',
             s3Bucket: myBaseInfra.s3Bucket,
@@ -66,7 +68,7 @@ class MyStack extends TerraformStack {
         });
 
         const recordViewingsAppName = 'record-viewings';
-        new MyLambdaAppConstruct(this, `my-lambda-app-construct-${recordViewingsAppName}`, {
+        new MyLambdaApp(this, `my-lambda-app-construct-${recordViewingsAppName}`, {
             name: recordViewingsAppName,
             routeKey: 'POST /videos/{videoId}',
             s3Bucket: myBaseInfra.s3Bucket,

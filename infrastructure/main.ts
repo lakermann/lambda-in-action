@@ -29,17 +29,45 @@ class MyStack extends TerraformStack {
         const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`);
 
         // TODO: Create proper construct (naming conventions, config, etc.)
-        new MyDynamodbTable(this, "messages", "id", [{
+        const messageStore = new MyDynamodbTable(this, "messages", "id", [{
             name: "id",
             type: "S"
         }])
+
+        const lambdaRolePolicy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Effect": "Allow",
+                    "Sid": ""
+                }
+            ]
+        };
+
+        const lambdaDynamodbMessageStoreInlinePolicy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": [
+                        "dynamodb:PutItem"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": `${messageStore.dynamodbTable.arn}`
+                }
+            ]
+        };
 
         const apiTestAppName = 'api-test';
         new MyLambdaApp(this, `${id}-lambda-app-${apiTestAppName}`, {
             name: apiTestAppName,
             routeKey: 'GET /test',
             s3Bucket: myBaseInfra.s3Bucket,
-            role: myBaseInfra.lambdaRole,
+            rolePolicy: JSON.stringify(lambdaRolePolicy),
+            inlinePolicy: [],
             apiId: myBaseInfra.apiGateway.api.id,
             apiExecutionArn: myBaseInfra.apiGateway.api.executionArn,
             authorizerId: myBaseInfra.apiGateway.authorizer.id,
@@ -50,7 +78,11 @@ class MyStack extends TerraformStack {
             name: recordViewingsAppName,
             routeKey: 'POST /videos/{videoId}',
             s3Bucket: myBaseInfra.s3Bucket,
-            role: myBaseInfra.lambdaRole,
+            rolePolicy: JSON.stringify(lambdaRolePolicy),
+            inlinePolicy: [{
+                name: "inline-policy",
+                policy: JSON.stringify(lambdaDynamodbMessageStoreInlinePolicy)
+            }],
             apiId: myBaseInfra.apiGateway.api.id,
             apiExecutionArn: myBaseInfra.apiGateway.api.executionArn,
             authorizerId: myBaseInfra.apiGateway.authorizer.id,

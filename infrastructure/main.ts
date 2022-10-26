@@ -6,6 +6,7 @@ import * as random from "@cdktf/provider-random"
 import MyDynamodbTable from "./constructs/my-dynamodb-table";
 import MyBaseInfra from "./constructs/my-base-infra";
 import MyLambdaApp from "./constructs/my-lambda-app";
+import MyKinesisStream from "./constructs/my-kinesis-stream";
 
 class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
@@ -28,11 +29,15 @@ class MyStack extends TerraformStack {
         // resources
         const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`);
 
-        // TODO: Create proper construct (naming conventions, config, etc.)
-        const messageStore = new MyDynamodbTable(this, "messages", "id", [{
-            name: "id",
-            type: "S"
-        }])
+        const messageStream = new MyKinesisStream(this, `${id}-kinesis-message-stream`, {
+            streamName: "messages-stream"
+        })
+
+        const messageStore = new MyDynamodbTable(this, "messages", {
+            hashKey: "id",
+            attribute: [{name: "id", type: "S"}],
+            kinesisStream: messageStream
+        });
 
         const lambdaRolePolicy = {
             "Version": "2012-10-17",

@@ -1,13 +1,13 @@
 import {Construct} from "constructs";
 import {Apigatewayv2Authorizer} from "@cdktf/provider-aws/lib/apigatewayv2-authorizer";
 import {Apigatewayv2Api} from "@cdktf/provider-aws/lib/apigatewayv2-api";
-import {DataAwsLambdaFunction} from "@cdktf/provider-aws/lib/data-aws-lambda-function";
 import {Apigatewayv2Stage} from "@cdktf/provider-aws/lib/apigatewayv2-stage";
 import {DataAwsCloudwatchLogGroup} from "@cdktf/provider-aws/lib/data-aws-cloudwatch-log-group";
 import {LambdaPermission} from "@cdktf/provider-aws/lib/lambda-permission";
+import * as aws from "@cdktf/provider-aws";
 
 export interface MyApiGatewayConfig {
-    authorizerFunction: DataAwsLambdaFunction
+    authorizerFunction: aws.lambdaFunction.LambdaFunction
 }
 
 export class MyApiGateway extends Construct {

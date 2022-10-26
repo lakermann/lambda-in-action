@@ -22,7 +22,7 @@ export default class MyLambdaApp extends Construct {
         const functionName = `app-${config.name}`;
         const assetSourcePath = path.resolve(__dirname, `../../application/dist/app/${config.name}`);
 
-        const myLambdaFunction = new MyLambda(this, `my-lambda-function-${id}`, {
+        const myLambdaFunction = new MyLambda(this, `${id}-my-lambda-function`, {
             functionName: functionName,
             assetSourcePath: assetSourcePath,
             s3Bucket: config.s3Bucket,
@@ -31,7 +31,7 @@ export default class MyLambdaApp extends Construct {
 
         const lambdaFunction = myLambdaFunction.lambdaFunction;
 
-        new MyApiLambdaIntegration(this, `my-api-lambda-integration-${id}`, {
+        new MyApiLambdaIntegration(this, `${id}-my-api-lambda-integration`, {
             lambdaFunction: lambdaFunction,
             routeKey: config.routeKey,
             apiId: config.apiId,

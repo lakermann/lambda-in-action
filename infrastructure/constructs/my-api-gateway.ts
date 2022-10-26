@@ -17,12 +17,12 @@ export class MyApiGateway extends Construct {
     constructor(scope: Construct, id: string, config: MyApiGatewayConfig) {
         super(scope, id);
 
-        this.api = new Apigatewayv2Api(this, `api-gateway-v2-api-${id}`, {
+        this.api = new Apigatewayv2Api(this, `${id}-api-gateway-v2-api`, {
             name: 'lambda-in-action',
             protocolType: 'HTTP',
         });
 
-        this.authorizer = new Apigatewayv2Authorizer(this, `api-gateway-v2-authorizer-${id}`, {
+        this.authorizer = new Apigatewayv2Authorizer(this, `${id}-api-gateway-v2-authorizer`, {
             name: 'api-key',
             apiId: this.api.id,
             authorizerType: 'REQUEST',
@@ -34,18 +34,19 @@ export class MyApiGateway extends Construct {
             authorizerPayloadFormatVersion: '2.0',
         });
 
-        new LambdaPermission(this, `api-gateway-authorizer-lambda-permission-${id}`, {
+        new LambdaPermission(this, `${id}-api-gateway-authorizer-lambda-permission`, {
             functionName: config.authorizerFunction.functionName,
             action: 'lambda:InvokeFunction',
             principal: 'apigateway.amazonaws.com',
             sourceArn: `${this.api.executionArn}/authorizers/${this.authorizer.id}`,
         })
 
+        // TODO: Create with CDK for Terraform
         const accessLogGroup = new DataAwsCloudwatchLogGroup(this, 'access-log-group', {
             name: 'api-gateway-access-logging'
         });
 
-        new Apigatewayv2Stage(this, `api-gateway-v2-stage-${id}`, {
+        new Apigatewayv2Stage(this, `${id}-api-gateway-v2-stage`, {
             apiId: this.api.id,
             name: '$default',
             autoDeploy: true,

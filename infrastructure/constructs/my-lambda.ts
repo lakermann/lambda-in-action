@@ -17,18 +17,18 @@ export default class MyLambda extends Construct {
 
         const functionName = config.functionName;
 
-        const asset = new TerraformAsset(this, `terraform-asset-${functionName}`, {
+        const asset = new TerraformAsset(this, `${id}-terraform-asset`, {
             path: config.assetSourcePath,
             type: AssetType.ARCHIVE,
         });
 
-        const s3Object = new aws.s3Object.S3Object(this, `s3-object-${functionName}`, {
+        const s3Object = new aws.s3Object.S3Object(this, `${id}-s3-object`, {
             bucket: config.s3Bucket.bucket,
             key: `${functionName}/${asset.fileName}`,
             source: asset.path,
         });
 
-        this.lambdaFunction = new aws.lambdaFunction.LambdaFunction(this, `lambda-function-${functionName}`, {
+        this.lambdaFunction = new aws.lambdaFunction.LambdaFunction(this, `${id}-lambda-function`, {
             functionName: functionName,
             role: config.role.arn,
             s3Bucket: config.s3Bucket.bucket,

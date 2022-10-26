@@ -18,21 +18,21 @@ export default class MyApiLambdaIntegration extends Construct {
 
         const lambdaFunction = config.lambdaFunction;
 
-        new LambdaPermission(this, `lambda-permission-${id}`, {
+        new LambdaPermission(this, `${id}-lambda-permission`, {
             functionName: lambdaFunction.functionName,
             action: 'lambda:InvokeFunction',
             principal: 'apigateway.amazonaws.com',
             sourceArn: `${config.apiExecutionArn}/*`,
         });
 
-        const apigatewayv2Integration = new Apigatewayv2Integration(this, `api-gateway-v2-integration-${id}`, {
+        const apigatewayv2Integration = new Apigatewayv2Integration(this, `${id}-api-gateway-v2-integration`, {
             apiId: config.apiId,
             integrationType: 'AWS_PROXY',
             connectionType: 'INTERNET',
             integrationUri: lambdaFunction.invokeArn,
         });
 
-        new Apigatewayv2Route(this, `api-gateway-v2-route-${id}`, {
+        new Apigatewayv2Route(this, `${id}-api-gateway-v2-route`, {
             apiId: config.apiId,
             routeKey: config.routeKey,
             target: `integrations/${apigatewayv2Integration.id}`,

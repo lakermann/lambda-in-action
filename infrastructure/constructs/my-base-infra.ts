@@ -1,9 +1,9 @@
 import * as aws from "@cdktf/provider-aws";
 import {Construct} from "constructs";
 import {MyApiGateway} from "./my-api-gateway";
-import * as random from "@cdktf/provider-random";
 import MyLambda from "./my-lambda";
 import * as path from "path";
+import MyApiSecret from "./my-api-secret";
 
 const lambdaRolePolicy = {
     "Version": "2012-10-17",
@@ -27,38 +27,26 @@ export default class MyBaseInfra extends Construct {
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.s3Bucket = new aws.s3Bucket.S3Bucket(this, 'code', {
+        this.s3Bucket = new aws.s3Bucket.S3Bucket(this, `${id}-code-s3-bucket`, {
             bucket: 'lambda-in-action-code',
         });
 
-        this.lambdaRole = new aws.iamRole.IamRole(this, "role-test-lambda", {
-            name: `test-lambda`,
+        this.lambdaRole = new aws.iamRole.IamRole(this, `${id}-iam-role-lambda-execution`, {
+            name: `lambda-execution-role`,
             assumeRolePolicy: JSON.stringify(lambdaRolePolicy)
         });
 
-        const apiKey = new random.password.Password(this, 'api-key', {
-            length: 16,
-            special: false
-        });
-
-        const apiKeySecret = new aws.secretsmanagerSecret.SecretsmanagerSecret(this, 'api-key-secret', {
-            name: 'api-key'
-        });
-
-        new aws.secretsmanagerSecretVersion.SecretsmanagerSecretVersion(this, 'api-key-secret-v1', {
-            secretId: apiKeySecret.id,
-            secretString: apiKey.result
-        })
+        new MyApiSecret(this, `${id}-my-api-secret`);
 
         const authorizerAssetSourcePath = path.resolve(__dirname, '../../application/src/authorizer');
-        const authorizerFunction = new MyLambda(this, 'fun-authorizer', {
-            functionName: 'authorizer',
+        const authorizerFunction = new MyLambda(this, `${id}-api-authorizer-function`, {
+            functionName: 'api-authorizer-function',
             assetSourcePath: authorizerAssetSourcePath,
             s3Bucket: this.s3Bucket,
             role: this.lambdaRole
         });
 
-        this.apiGateway = new MyApiGateway(this, 'authorizer-config', {
+        this.apiGateway = new MyApiGateway(this, `${id}-my-api-gateway`, {
             authorizerFunction: authorizerFunction.lambdaFunction
         });
     }

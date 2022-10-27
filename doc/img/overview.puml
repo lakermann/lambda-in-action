@@ -21,7 +21,7 @@ Lambda(app1, "Aggregator", "...")
 Lambda(app2, "Component", "...")
 Lambda(app3, "...", "...")
 Lambda(appApiTest, "api-test", "hello from lambda")
-Lambda(authorizer, "authorizer", "bearer token validation")
+Lambda(authorizer, "authorizer", "api key validation")
 
 users --> apiGateway
 apiGateway --> authorizer

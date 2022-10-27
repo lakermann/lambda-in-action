@@ -44,9 +44,8 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: Kinesi
             Key: {
                 "page_name": "home"
             },
-            UpdateExpression: "SET #pagedata.#videoswatched = if_not_exists(#pagedata.#videoswatched, :zero) + :increase",
+            UpdateExpression: "SET page_data.#videoswatched = if_not_exists(page_data.#videoswatched, :zero) + :increase",
             ExpressionAttributeNames: {
-                '#pagedata': 'page_data',
                 '#videoswatched': 'videos_watched',
             },
             ExpressionAttributeValues: {
@@ -62,6 +61,8 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: Kinesi
                 event: JSON.stringify(event)
             }
         }, error)
+
+        throw error; // re-throw to ensure Lambda is not considered successful
     }
 
 };

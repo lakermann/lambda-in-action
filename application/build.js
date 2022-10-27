@@ -1,6 +1,6 @@
 const glob = require("tiny-glob");
 
-const buildFunction = async () => {
+(async () => {
     let entryPoints = await glob("src/**/index.ts");
 
     require("esbuild")
@@ -11,11 +11,9 @@ const buildFunction = async () => {
             outdir: "dist",
             platform: "node",
             sourcemap: "inline",
-            outbase: "src"
+            outbase: "src",
+            minify: true,
         })
         .catch(() => process.exit(1));
-};
-
-buildFunction()
-    .then(() => console.log('build finished'));
+})();
 

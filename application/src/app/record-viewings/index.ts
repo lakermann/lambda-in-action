@@ -21,8 +21,8 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: APIGat
     }
 
     try {
-        const traceId = event.headers.traceId;
-        const userId = event.headers.userId;
+        const traceId = event.headers.traceid;
+        const userId = event.headers.userid;
         let videoViewedEvent = {
             id: uuid(),
             type: 'VideoViewed',

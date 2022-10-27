@@ -28,6 +28,13 @@ import Videos from "@/components/Video.vue";
         />
       </p>
     </ContentItem>
+    <ContentItem>
+      <template #icon>
+        <ToolingIcon />
+      </template>
+      <template #heading>Videos watched: {{ videoswatched }}</template>
+    </ContentItem>
+
     <ContentItem v-for="(video, index) in videos" :key="index">
       <template #icon>
         <CommunityIcon />
@@ -46,6 +53,7 @@ import Videos from "@/components/Video.vue";
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import axios from "axios";
 
 interface Videos {
   id: string;
@@ -60,10 +68,32 @@ export default defineComponent({
       videos: [] as Videos[],
       urlEndpoint: "",
       apiKey: "",
+      videoswatched: "n/a"
     };
   },
 
-  mounted() {
+  async mounted() {
+    setInterval(async () => {
+      try {
+        console.log(`${this.urlEndpoint}/pages/home`)
+        const reqInstance = axios.create({
+          headers: {
+            //Authorization : `Bearer ${localStorage.getItem("access_token")}`
+            traceId: `test-trace-id`,
+            userId: `test-user-id`,
+            "X-Api-Key": this.apiKey,
+          },
+        });
+        const {data, status} = await reqInstance.get(`${this.urlEndpoint}/pages/home`);
+        console.log(data.Item.page_data.videoswatched)
+
+        this.videoswatched = data.Item.page_data.videoswatched
+      } catch (error) {
+        console.log('unexpected error: ', error);
+      }
+    }, 10000)
+
+
     this.videos = [
       {
         id: "1",

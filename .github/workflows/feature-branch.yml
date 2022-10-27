@@ -40,10 +40,14 @@ jobs:
         run: npm ci
         working-directory: ./infrastructure
 
-      - name: Generate module and provider bindings
+      - name: Generate infrastructure module and provider bindings
         run: npx cdktf-cli get
         working-directory: ./infrastructure
 
-      - name: Diff
+      - name: Generate infrastructure diff
         run: npx cdktf diff
         working-directory: ./infrastructure
+
+      - name: Build ui
+        run: npm run build
+        working-directory: ./ui

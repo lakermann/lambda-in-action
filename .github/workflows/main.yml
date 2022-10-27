@@ -40,10 +40,18 @@ jobs:
         run: npm ci
         working-directory: ./infrastructure
 
-      - name: Generate module and provider bindings
+      - name: Generate infrastructure module and provider bindings
         run: npx cdktf-cli get
         working-directory: ./infrastructure
 
-      - name: Deploy
+      - name: Deploy infrastructure
         run: npx cdktf deploy --auto-approve
         working-directory: ./infrastructure
+
+      - name: Build ui
+        run: npm run build
+        working-directory: ./ui
+
+      - name: Deploy ui
+        run: npm run deploy
+        working-directory: ./ui

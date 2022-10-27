@@ -16,6 +16,24 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: Kinesi
         };
         await dynamo.update(createPageDataIfNotExists).promise();
 
+        // TODO: Make update idempotent --> use global position (does not exist yet)
+        /* Original query was:
+      UPDATE
+        pages
+      SET
+        page_data = jsonb_set(
+          jsonb_set(
+            page_data,
+            '{videosWatched}',
+            ((page_data ->> 'videosWatched')::int + 1)::text::jsonb
+          ),
+          '{lastViewProcessed}',
+          :globalPosition::text::jsonb
+        )
+      WHERE
+        page_name = 'home' AND
+        (page_data->>'lastViewProcessed')::int < :globalPosition
+         */
         const updateVideosWatchedCounter = {
             TableName: 'pages',
             Key: {

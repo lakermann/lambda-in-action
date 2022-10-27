@@ -9,7 +9,7 @@ import MyLambdaApp from "./constructs/my-lambda-app";
 import MyLambdaAggregator from "./constructs/my-lambda-aggregator";
 import MyDynamoDbTable from "./constructs/my-dynamo-db-table";
 
-
+// TODO: Check overall naming conventions, do we really need to add id ourselves everywhere?
 class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);

@@ -11,11 +11,12 @@ export default class MyMessageStore extends Construct {
         super(scope, id);
 
         this.myDynamoDbTable = new MyDynamoDbTable(this, `${id}-dynamodb-table`, {
+            tableName: 'messages',
             hashKey: "id",
             attribute: [{name: "id", type: "S"}],
         });
 
-        this.myKinesisStream = new MyKinesisStream(this, `${id}-kinesis-message-stream`, {
+        this.myKinesisStream = new MyKinesisStream(this, `${id}-my-kinesis-message-stream`, {
             streamName: "messages-stream"
         });
 

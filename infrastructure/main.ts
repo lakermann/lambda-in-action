@@ -32,9 +32,10 @@ class MyStack extends TerraformStack {
         const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`);
 
         // TODO: Move message store to base infra?
-        const myMessageStore = new MyMessageStore(this, "messages");
+        const myMessageStore = new MyMessageStore(this, "${id}-my-message-store");
 
         const myDynamoDbTablePageData = new MyDynamoDbTable(this, `${id}-my-dynamo-db-table-page-data`, {
+            tableName: 'pages',
             hashKey: 'page_name',
             attribute: [{name: "page_name", type: "S"}],
         });

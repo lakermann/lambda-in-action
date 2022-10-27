@@ -2,6 +2,7 @@ import {Construct} from "constructs";
 import * as aws from "@cdktf/provider-aws";
 
 export interface MyDynamoDbTableConfig {
+    tableName: string,
     hashKey: string,
     attribute: [{ name: string; type: string }]
 }
@@ -14,7 +15,7 @@ export default class MyDynamoDbTable extends Construct {
         super(scope, id);
 
         this.dynamodbTable = new aws.dynamodbTable.DynamodbTable(this, `${id}-dynamodb-table`, {
-            name: id,
+            name: config.tableName,
             billingMode: "PAY_PER_REQUEST",
             hashKey: config.hashKey,
             attribute: config.attribute

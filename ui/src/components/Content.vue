@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import WelcomeItem from "./WelcomeItem.vue";
-import ToolingIcon from "./icons/IconTooling.vue";
-import CommunityIcon from "./icons/IconCommunity.vue";
+import ContentItem from "./ContentItem.vue";
+import ToolingIcon from "./icons/IconConfiguration.vue";
+import CommunityIcon from "./icons/IconVideo.vue";
 import Videos from "@/components/Video.vue";
 </script>
 
 <template>
   <div>
-    <WelcomeItem>
+    <ContentItem>
       <template #icon>
         <ToolingIcon />
       </template>
@@ -27,8 +27,8 @@ import Videos from "@/components/Video.vue";
           size="15"
         />
       </p>
-    </WelcomeItem>
-    <WelcomeItem v-for="(video, index) in videos" :key="index">
+    </ContentItem>
+    <ContentItem v-for="(video, index) in videos" :key="index">
       <template #icon>
         <CommunityIcon />
       </template>
@@ -41,7 +41,7 @@ import Videos from "@/components/Video.vue";
         :urlEndpoint="urlEndpoint"
         :apiKey="apiKey"
       />
-    </WelcomeItem>
+    </ContentItem>
   </div>
 </template>
 <script lang="ts">
@@ -54,7 +54,7 @@ interface Videos {
   youtubeId: string;
 }
 export default defineComponent({
-  name: "TheWelcome",
+  name: "Content",
   data() {
     return {
       videos: [] as Videos[],

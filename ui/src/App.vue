@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
-import TheWelcome from "./components/TheWelcome.vue";
+import Title from "./components/Title.vue";
+import Content from "./components/Content.vue";
 </script>
 
 <template>
@@ -15,12 +15,12 @@ import TheWelcome from "./components/TheWelcome.vue";
       />
 
       <div class="wrapper">
-        <HelloWorld msg="in action!" />
+        <Title msg="in action!" />
       </div>
     </header>
 
     <main>
-      <TheWelcome />
+      <Content />
     </main>
   </div>
 </template>

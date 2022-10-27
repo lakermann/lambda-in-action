@@ -12,7 +12,6 @@ const glob = require("tiny-glob");
             platform: "node",
             sourcemap: "inline",
             outbase: "src",
-            minify: true,
         })
         .catch(() => process.exit(1));
 })();

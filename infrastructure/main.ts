@@ -3,11 +3,13 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
-import MyDynamodbTable from "./constructs/my-dynamodb-table";
+import MyMessageStore from "./constructs/my-message-store";
 import MyBaseInfra from "./constructs/my-base-infra";
 import MyLambdaApp from "./constructs/my-lambda-app";
-import MyKinesisStream from "./constructs/my-kinesis-stream";
+import MyLambdaAggregator from "./constructs/my-lambda-aggregator";
+import MyDynamoDbTable from "./constructs/my-dynamo-db-table";
 
+// TODO: Check overall naming conventions, do we really need to add id ourselves everywhere?
 class MyStack extends TerraformStack {
     constructor(scope: Construct, id: string) {
         super(scope, id);
@@ -29,53 +31,23 @@ class MyStack extends TerraformStack {
         // resources
         const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`);
 
-        const messageStream = new MyKinesisStream(this, `${id}-kinesis-message-stream`, {
-            streamName: "messages-stream"
-        })
+        // TODO: Move message store to base infra?
+        const myMessageStore = new MyMessageStore(this, "${id}-my-message-store");
 
-        const messageStore = new MyDynamodbTable(this, "messages", {
-            hashKey: "id",
-            attribute: [{name: "id", type: "S"}],
-            kinesisStream: messageStream
+        const myDynamoDbTablePageData = new MyDynamoDbTable(this, `${id}-my-dynamo-db-table-page-data`, {
+            tableName: 'pages',
+            hashKey: 'page_name',
+            attribute: [{name: "page_name", type: "S"}],
         });
 
-        const lambdaRolePolicy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Action": "sts:AssumeRole",
-                    "Principal": {
-                        "Service": "lambda.amazonaws.com"
-                    },
-                    "Effect": "Allow",
-                    "Sid": ""
-                }
-            ]
-        };
-
-        const lambdaDynamodbMessageStoreInlinePolicy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Action": [
-                        "dynamodb:PutItem"
-                    ],
-                    "Effect": "Allow",
-                    "Resource": `${messageStore.dynamodbTable.arn}`
-                }
-            ]
-        };
-
+        // Apps
         const apiTestAppName = 'api-test';
         new MyLambdaApp(this, `${id}-lambda-app-${apiTestAppName}`, {
             name: apiTestAppName,
             routeKey: 'GET /test',
             s3Bucket: myBaseInfra.s3Bucket,
-            rolePolicy: JSON.stringify(lambdaRolePolicy),
-            inlinePolicy: [],
-            apiId: myBaseInfra.apiGateway.api.id,
-            apiExecutionArn: myBaseInfra.apiGateway.api.executionArn,
-            authorizerId: myBaseInfra.apiGateway.authorizer.id,
+            messageStore: myMessageStore,
+            apiGateway: myBaseInfra.apiGateway,
         });
 
         const recordViewingsAppName = 'record-viewings';
@@ -83,14 +55,20 @@ class MyStack extends TerraformStack {
             name: recordViewingsAppName,
             routeKey: 'POST /videos/{videoId}',
             s3Bucket: myBaseInfra.s3Bucket,
-            rolePolicy: JSON.stringify(lambdaRolePolicy),
-            inlinePolicy: [{
-                name: "inline-policy",
-                policy: JSON.stringify(lambdaDynamodbMessageStoreInlinePolicy)
-            }],
-            apiId: myBaseInfra.apiGateway.api.id,
-            apiExecutionArn: myBaseInfra.apiGateway.api.executionArn,
-            authorizerId: myBaseInfra.apiGateway.authorizer.id,
+            messageStore: myMessageStore,
+            apiGateway: myBaseInfra.apiGateway,
+        });
+
+        // Components
+        // ...no componets yet...
+
+        // Aggregators
+        const totalVideosViewAggregatorName = 'total-videos-viewed';
+        new MyLambdaAggregator(this, `${id}-lambda-aggregator-${totalVideosViewAggregatorName}`, {
+            name: totalVideosViewAggregatorName,
+            s3Bucket: myBaseInfra.s3Bucket,
+            messageStore: myMessageStore,
+            viewData: myDynamoDbTablePageData
         });
     }
 }

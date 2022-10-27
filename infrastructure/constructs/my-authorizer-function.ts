@@ -62,7 +62,7 @@ export class MyAuthorizerFunction extends Construct {
             inlinePolicy: [authorizerPolicy]
         });
 
-        const authorizerAssetSourcePath = path.resolve(__dirname, '../../application/src/authorizer');
+        const authorizerAssetSourcePath = path.resolve(__dirname, '../../application/dist/authorizer');
         const myAuthorizerLambda = new MyLambda(this, `${id}-api-authorizer-function`, {
             functionName: 'api-authorizer-function',
             assetSourcePath: authorizerAssetSourcePath,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Title from "./components/Title.vue";
-import Content from "./components/Content.vue";
+import SectionTitle from "./components/SectionTitle.vue";
+import SectionContent from "@/components/SectionContent.vue";
 </script>
 
 <template>
@@ -15,12 +15,12 @@ import Content from "./components/Content.vue";
       />
 
       <div class="wrapper">
-        <Title msg="in action!" />
+        <SectionTitle msg="in action!" />
       </div>
     </header>
 
     <main>
-      <Content />
+      <SectionContent />
     </main>
   </div>
 </template>

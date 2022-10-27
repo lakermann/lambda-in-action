@@ -1,1 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 261.76 226.69"  xmlns:v="https://vecta.io/nano"><path d="M161.096.001l-30.225 52.351L100.647.001H-.005l130.877 226.688L261.749.001z" fill="#41b883"/><path d="M161.096.001l-30.225 52.351L100.647.001H52.346l78.526 136.01L209.398.001z" fill="#34495e"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 261.76 226.69"
+   version="1.1"
+   id="svg55"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.1.2 (b8e25be8, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs59" />
+  <sodipodi:namedview
+     id="namedview57"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.16"
+     inkscape:cx="79.861111"
+     inkscape:cy="125.69444"
+     inkscape:window-width="1438"
+     inkscape:window-height="851"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g12671" />
+  <g
+     inkscape:groupmode="layer"
+     id="g12671"
+     inkscape:label="Layer 2"
+     style="display:inline">
+    <g
+       aria-label=" ʎ"
+       id="text12669"
+       style="font-size:40px;line-height:1.25;fill:#34495e"
+       transform="translate(228.12121,13.151515)">
+      <path
+         d="m -46.667816,213.40338 h -42 v 0 c -4.166667,-11.14583 -2.21875,-5.97917 -6.28125,-19.3125 -4.479169,14.47917 -3.291674,8.79167 -7.250004,19.3125 v 0 l -43.8125,-0.5 54.031254,-135.062499 19.740365,1.743769 -0.677865,61.53748 z"
+         style="font-weight:bold;font-size:320px;-inkscape-font-specification:'sans-serif Bold'"
+         id="path14559"
+         sodipodi:nodetypes="ccccccccccc" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 1"
+     style="display:inline">
+    <g
+       aria-label=" ʎ"
+       transform="scale(0.99486282,1.0051637)"
+       id="text1003"
+       style="font-size:39.3997px;line-height:1.25;fill:#41b883;stroke-width:0.984992">
+      <path
+         d="M 218.28669,225.29033 H 173.96211 L 145.95144,150.3387 q -6.15619,-16.46781 -12.15848,-36.16762 -6.6179,21.39276 -12.46628,36.93714 L 93.162101,225.29033 H 48.529714 L 136.71715,-0.33407959 h 42.63163 L 155.49354,61.997357 Z"
+         style="font-weight:bold;font-size:315.197px;-inkscape-font-specification:'sans-serif Bold'"
+         id="path15184" />
+    </g>
+  </g>
+</svg>

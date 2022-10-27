@@ -3,6 +3,7 @@ require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
   root: true,
+  ignorePatterns: "**/scripts/*.js",
   extends: [
     "plugin:vue/essential",
     "eslint:recommended",

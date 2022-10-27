@@ -2,6 +2,7 @@
 import axios from "axios";
 
 export default {
+  name: "VideoItem",
   props: {
     youtubeId: String,
     videoId: String,
@@ -13,7 +14,7 @@ export default {
       this.player.playVideo();
     },
     async playing() {
-      console.log("\o/ we are watching!!!");
+      console.log("we are watching!!!");
       const reqInstance = axios.create({
         headers: {
           //Authorization : `Bearer ${localStorage.getItem("access_token")}`

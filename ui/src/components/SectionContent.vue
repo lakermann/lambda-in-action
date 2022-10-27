@@ -2,7 +2,7 @@
 import ContentItem from "./ContentItem.vue";
 import ToolingIcon from "./icons/IconConfiguration.vue";
 import CommunityIcon from "./icons/IconVideo.vue";
-import Videos from "@/components/Video.vue";
+import VideoItem from "@/components/VideoItem.vue";
 </script>
 
 <template>
@@ -42,7 +42,7 @@ import Videos from "@/components/Video.vue";
       <template #heading>{{ video.title }}</template>
       {{ video.description }}
       <br /><br />
-      <Videos
+      <VideoItem
         :youtubeId="video.youtubeId"
         :videoId="video.id"
         :urlEndpoint="urlEndpoint"
@@ -62,20 +62,20 @@ interface Videos {
   youtubeId: string;
 }
 export default defineComponent({
-  name: "Content",
+  name: "SectionContent",
   data() {
     return {
       videos: [] as Videos[],
       urlEndpoint: "",
       apiKey: "",
-      videoswatched: "n/a"
+      videoswatched: "n/a",
     };
   },
 
   async mounted() {
     setInterval(async () => {
       try {
-        console.log(`${this.urlEndpoint}/pages/home`)
+        console.log(`${this.urlEndpoint}/pages/home`);
         const reqInstance = axios.create({
           headers: {
             //Authorization : `Bearer ${localStorage.getItem("access_token")}`
@@ -84,15 +84,16 @@ export default defineComponent({
             "X-Api-Key": this.apiKey,
           },
         });
-        const {data, status} = await reqInstance.get(`${this.urlEndpoint}/pages/home`);
-        console.log(data.Item.page_data.videoswatched)
+        const { data } = await reqInstance.get(
+          `${this.urlEndpoint}/pages/home`
+        );
+        console.log(data.Item.page_data.videoswatched);
 
-        this.videoswatched = data.Item.page_data.videoswatched
+        this.videoswatched = data.Item.page_data.videoswatched;
       } catch (error) {
-        console.log('unexpected error: ', error);
+        console.log("unexpected error: ", error);
       }
-    }, 10000)
-
+    }, 10000);
 
     this.videos = [
       {

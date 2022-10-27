@@ -53,5 +53,5 @@ jobs:
         working-directory: ./ui
 
       - name: Build ui
-        run: npm run build
+        run: npm run build-only
         working-directory: ./ui

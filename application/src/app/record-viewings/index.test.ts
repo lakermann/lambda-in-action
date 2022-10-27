@@ -121,8 +121,8 @@ describe('RecordViewingsHandler', () => {
         return {
             body: null,
             headers: {
-                traceId: traceId,
-                userId: userId
+                traceid: traceId,
+                userid: userId
             },
             multiValueHeaders: {},
             httpMethod: "",

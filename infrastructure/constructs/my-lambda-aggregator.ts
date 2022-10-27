@@ -44,7 +44,7 @@ export default class MyLambdaAggregator extends Construct {
         const assetSourcePath = path.resolve(__dirname, `../../application/dist/aggregators/${config.name}`);
 
         const awsLambdaExecutionInlinePolicy = {
-            name: "inline-policy",
+            name: "aws-lambda-kinesis-execution-policy",
             policy: JSON.stringify(AWSLambdaKinesisExecutionRole)
         };
 

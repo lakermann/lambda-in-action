@@ -22,7 +22,7 @@ export default class MyDynamoDbTable extends Construct {
         });
 
         // TODO: More fine granular policies
-        const lambdaDynamodbMessageStoreInlinePolicy = {
+        const dynamoDbAccesTablePolicy = {
             "Version": "2012-10-17",
             "Statement": [
                 {
@@ -38,8 +38,8 @@ export default class MyDynamoDbTable extends Construct {
         };
 
         this.inlinePolicy = {
-            name: "inline-policy",
-            policy: JSON.stringify(lambdaDynamodbMessageStoreInlinePolicy)
+            name: `${config.tableName}-access-table-policy`,
+            policy: JSON.stringify(dynamoDbAccesTablePolicy)
         };
     }
 

@@ -11,10 +11,14 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: Kinesi
             Key: {
                 "page_name": "home"
             },
-            UpdateExpression: "SET page_data = if_not_exists(page_data, {})",
+            UpdateExpression: "SET page_data = if_not_exists(page_data, :empty)",
+            ExpressionAttributeValues: {
+                ":empty": {},
+            },
             ReturnValues: "UPDATED_NEW"
         };
         await dynamo.update(createPageDataIfNotExists).promise();
+        // TODO: We may get multiple records per event
 
         // TODO: Make update idempotent --> use global position (does not exist yet)
         /* Original query was:
@@ -34,12 +38,17 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: Kinesi
         page_name = 'home' AND
         (page_data->>'lastViewProcessed')::int < :globalPosition
          */
+
         const updateVideosWatchedCounter = {
             TableName: 'pages',
             Key: {
                 "page_name": "home"
             },
-            UpdateExpression: "SET page_data.videos_watched = if_not_exists(page_data.videos_watched, :zero) + :increase",
+            UpdateExpression: "SET #pagedata.#videoswatched = if_not_exists(#pagedata.#videoswatched, :zero) + :increase",
+            ExpressionAttributeNames: {
+                '#pagedata': 'page_data',
+                '#videoswatched': 'videos_watched',
+            },
             ExpressionAttributeValues: {
                 ":increase": {"N": "1"},
                 ":zero": {"N": "0"}

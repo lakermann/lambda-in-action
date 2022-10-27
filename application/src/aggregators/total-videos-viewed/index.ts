@@ -44,13 +44,10 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: Kinesi
             Key: {
                 "page_name": "home"
             },
-            UpdateExpression: "SET page_data.#videoswatched = if_not_exists(page_data.#videoswatched, :zero) + :increase",
-            ExpressionAttributeNames: {
-                '#videoswatched': 'videos_watched',
-            },
+            UpdateExpression: "SET page_data.videoswatched = if_not_exists(page_data.videoswatched, :start) + :inc",
             ExpressionAttributeValues: {
-                ":increase": {"N": "1"},
-                ":zero": {"N": "0"}
+                ':inc': 1,
+                ':start': 0,
             },
             ReturnValues: "UPDATED_NEW"
         };

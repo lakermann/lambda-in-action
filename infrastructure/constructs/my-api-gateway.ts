@@ -8,6 +8,7 @@ import * as aws from "@cdktf/provider-aws";
 
 export interface MyApiGatewayConfig {
     authorizerFunction: aws.lambdaFunction.LambdaFunction
+    allowOrigins: string[]
 }
 
 export class MyApiGateway extends Construct {
@@ -20,6 +21,11 @@ export class MyApiGateway extends Construct {
         this.api = new Apigatewayv2Api(this, `${id}-api-gateway-v2-api`, {
             name: 'lambda-in-action',
             protocolType: 'HTTP',
+            corsConfiguration: {
+                allowOrigins: config.allowOrigins,
+                allowMethods: ['POST'],
+                allowHeaders: ['traceid','userid','x-api-key'],
+            }
         });
 
         this.authorizer = new Apigatewayv2Authorizer(this, `${id}-api-gateway-v2-authorizer`, {

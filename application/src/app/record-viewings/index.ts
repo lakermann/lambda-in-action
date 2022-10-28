@@ -1,5 +1,5 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from "aws-lambda";
-import {logger} from "../../powertools/utitlities";
+import {logger} from "../../powertools/utilities";
 import {DynamoDB} from 'aws-sdk';
 
 import {v4 as uuid} from 'uuid';

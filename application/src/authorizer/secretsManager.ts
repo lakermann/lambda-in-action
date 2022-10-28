@@ -1,22 +1,20 @@
-'use strict'
-const AWS = require('aws-sdk');
+const {SecretsManager} = require('aws-sdk');
 
-class SecretsManager {
+export class MySecretsManager {
 
     /**
      * Uses AWS Secrets Manager to retrieve a secret
      */
-    static async getSecret (secretName, region){
-        const config = { region : region }
-        var secret, decodedBinarySecret;
-        let secretsManager = new AWS.SecretsManager(config);
+    static async getSecret(secretName: string, region: string): Promise<string | any> {
+        const config = {region: region}
+        let secretsManager = new SecretsManager(config);
         try {
             let secretValue = await secretsManager.getSecretValue({SecretId: secretName}).promise();
             if ('SecretString' in secretValue) {
-                return secret = secretValue.SecretString;
+                return secretValue.SecretString;
             } else {
                 let buff = new Buffer(secretValue.SecretBinary, 'base64');
-                return decodedBinarySecret = buff.toString('ascii');
+                return buff.toString('ascii');
             }
         } catch (err) {
             if (err.code === 'DecryptionFailureException')
@@ -42,4 +40,3 @@ class SecretsManager {
         }
     }
 }
-module.exports = SecretsManager;

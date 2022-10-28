@@ -6,7 +6,7 @@ export interface MyKinesisStreamConfig {
 }
 
 export default class MyKinesisStream extends Construct {
-    readonly stream;
+    readonly stream: aws.kinesisStream.KinesisStream;
 
     constructor(scope: Construct, id: string, config: MyKinesisStreamConfig) {
         super(scope, id);

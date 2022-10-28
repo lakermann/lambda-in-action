@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import axios from "axios";
 
-export default {
-  name: "VideoItem",
+export default defineComponent({
   props: {
     youtubeId: String,
     videoId: String,
@@ -10,9 +10,6 @@ export default {
     apiKey: String,
   },
   methods: {
-    playVideo() {
-      this.player.playVideo();
-    },
     async playing() {
       console.log("we are watching!!!");
       const reqInstance = axios.create({
@@ -27,12 +24,7 @@ export default {
       await reqInstance.post(`${this.urlEndpoint}/videos/${this.videoId}`);
     },
   },
-  computed: {
-    player() {
-      return this.$refs.youtube.player;
-    },
-  },
-};
+});
 </script>
 
 <template>

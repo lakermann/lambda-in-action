@@ -32,7 +32,7 @@ import VideoItem from "@/components/VideoItem.vue";
       <template #icon>
         <ConfigurationIcon />
       </template>
-      <template #heading>Videos watched: {{ videoswatched }}</template>
+      <template #heading>Videos watched: {{ videoswatched || "n/a" }}</template>
     </ContentItem>
 
     <ContentItem v-for="(video, index) in videos" :key="index">
@@ -63,6 +63,13 @@ interface Videos {
   youtubeId: string;
 }
 
+interface PagesHomeResponse {
+  Item: {
+    page_data: { videoswatched: number };
+    page_name: string;
+  };
+}
+
 export default defineComponent({
   name: "SectionContent",
   data() {
@@ -70,7 +77,7 @@ export default defineComponent({
       videos: [] as Videos[],
       urlEndpoint: "",
       apiKey: "",
-      videoswatched: "n/a",
+      videoswatched: undefined as number | undefined,
     };
   },
   watch: {
@@ -85,7 +92,7 @@ export default defineComponent({
   async mounted() {
     setInterval(async () => {
       try {
-        const { data } = await axios.get(`/pages/home`);
+        const { data } = await axios.get<PagesHomeResponse>(`/pages/home`);
         this.videoswatched = data.Item.page_data.videoswatched;
       } catch (error) {
         console.log("unexpected error: ", error);

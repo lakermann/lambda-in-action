@@ -11,17 +11,11 @@ export default defineComponent({
   },
   methods: {
     async playing() {
-      console.log("we are watching!!!");
-      const reqInstance = axios.create({
-        headers: {
-          //Authorization : `Bearer ${localStorage.getItem("access_token")}`
-          traceId: `test-trace-id`,
-          userId: `test-user-id`,
-          "X-Api-Key": this.apiKey,
-        },
-      });
-
-      await reqInstance.post(`${this.urlEndpoint}/videos/${this.videoId}`);
+      try {
+        await axios.post(`/videos/${this.videoId}`);
+      } catch (error) {
+        console.log("unexpected error: ", error);
+      }
     },
   },
 });

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ContentItem from "./ContentItem.vue";
-import ToolingIcon from "./icons/IconConfiguration.vue";
-import CommunityIcon from "./icons/IconVideo.vue";
+import ConfigurationIcon from "./icons/IconConfiguration.vue";
+import VideoIcon from "./icons/IconVideo.vue";
 import VideoItem from "@/components/VideoItem.vue";
 </script>
 
@@ -9,7 +9,7 @@ import VideoItem from "@/components/VideoItem.vue";
   <div>
     <ContentItem>
       <template #icon>
-        <ToolingIcon />
+        <ConfigurationIcon />
       </template>
       <template #heading>Configuration</template>
       <p>
@@ -30,14 +30,14 @@ import VideoItem from "@/components/VideoItem.vue";
     </ContentItem>
     <ContentItem>
       <template #icon>
-        <ToolingIcon />
+        <ConfigurationIcon />
       </template>
       <template #heading>Videos watched: {{ videoswatched }}</template>
     </ContentItem>
 
     <ContentItem v-for="(video, index) in videos" :key="index">
       <template #icon>
-        <CommunityIcon />
+        <VideoIcon />
       </template>
       <template #heading>{{ video.title }}</template>
       {{ video.description }}
@@ -54,6 +54,7 @@ import VideoItem from "@/components/VideoItem.vue";
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
+import { setAxiosApiKey, setAxiosBaseURL } from "@/http-common";
 
 interface Videos {
   id: string;
@@ -61,6 +62,7 @@ interface Videos {
   description: string;
   youtubeId: string;
 }
+
 export default defineComponent({
   name: "SectionContent",
   data() {
@@ -71,24 +73,19 @@ export default defineComponent({
       videoswatched: "n/a",
     };
   },
+  watch: {
+    urlEndpoint: function (urlEndpoint: string) {
+      setAxiosBaseURL(urlEndpoint);
+    },
+    apiKey: function (apiKey: string) {
+      setAxiosApiKey(apiKey);
+    },
+  },
 
   async mounted() {
     setInterval(async () => {
       try {
-        console.log(`${this.urlEndpoint}/pages/home`);
-        const reqInstance = axios.create({
-          headers: {
-            //Authorization : `Bearer ${localStorage.getItem("access_token")}`
-            traceId: `test-trace-id`,
-            userId: `test-user-id`,
-            "X-Api-Key": this.apiKey,
-          },
-        });
-        const { data } = await reqInstance.get(
-          `${this.urlEndpoint}/pages/home`
-        );
-        console.log(data.Item.page_data.videoswatched);
-
+        const { data } = await axios.get(`/pages/home`);
         this.videoswatched = data.Item.page_data.videoswatched;
       } catch (error) {
         console.log("unexpected error: ", error);

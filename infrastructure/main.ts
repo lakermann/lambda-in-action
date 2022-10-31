@@ -3,6 +3,8 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
+import * as Null from '@cdktf/provider-null';
+
 import MyMessageStore from "./constructs/my-message-store";
 import MyBaseInfra from "./constructs/my-base-infra";
 import MyLambdaApp from "./constructs/my-lambda-app";
@@ -18,6 +20,8 @@ class MyStack extends TerraformStack {
         const awsProvider = new aws.provider.AwsProvider(this, `${id}-aws-provider`, {
             region: 'us-east-1'
         });
+
+        new Null.provider.NullProvider(this, `${id}-null-provider`, {});
 
         new random.provider.RandomProvider(this, `${id}-random-provider`, {});
 

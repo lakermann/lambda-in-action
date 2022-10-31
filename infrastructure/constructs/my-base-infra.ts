@@ -3,7 +3,7 @@ import {Construct} from "constructs";
 import {MyApiGateway} from "./my-api-gateway";
 import MyApiSecret from "./my-api-secret";
 import {MyAuthorizerFunction} from "./my-authorizer-function";
-import MyUiBucket from "./my-ui-bucket";
+import MyUiApp from "./my-ui-app";
 
 
 export default class MyBaseInfra extends Construct {
@@ -25,11 +25,11 @@ export default class MyBaseInfra extends Construct {
             apiKeyArn: myApiSecret.apiKeyArn,
         });
 
-        const myUiBucket = new MyUiBucket(this, `${id}-code-s3-ui`)
+        const myUiApp = new MyUiApp(this, `${id}-ui-app`)
 
         this.apiGateway = new MyApiGateway(this, `${id}-my-api-gateway`, {
             authorizerFunction: myAuthorizerFunction.authorizerFunction,
-            allowOrigins: [`https://${myUiBucket.bucket.bucketDomainName}`, 'http://127.0.0.1:5174']
+            allowOrigins: [`https://${myUiApp.bucket.bucketDomainName}`, 'http://127.0.0.1:5174']
         });
     }
 }

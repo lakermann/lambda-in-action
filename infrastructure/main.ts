@@ -10,6 +10,7 @@ import MyBaseInfra from "./constructs/my-base-infra";
 import MyLambdaApp from "./constructs/my-lambda-app";
 import MyLambdaAggregator from "./constructs/my-lambda-aggregator";
 import MyDynamoDbTable from "./constructs/my-dynamo-db-table";
+import MyUiApp from "./constructs/my-ui-app";
 
 // TODO: Check overall naming conventions, do we really need to add id ourselves everywhere?
 class MyStack extends TerraformStack {
@@ -32,8 +33,12 @@ class MyStack extends TerraformStack {
             region: awsProvider.region,
         });
 
+        const myUiApp = new MyUiApp(this, `${id}-ui-app`)
+
         // resources
-        const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`);
+        const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`, {
+            allowOrigins: [`https://${myUiApp.bucket.bucketDomainName}`, 'http://127.0.0.1:5174']
+        });
 
         // TODO: Move message store to base infra?
         const myMessageStore = new MyMessageStore(this, "${id}-my-message-store");

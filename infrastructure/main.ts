@@ -3,12 +3,15 @@ import {App, S3Backend, TerraformStack} from "cdktf";
 
 import * as aws from "@cdktf/provider-aws";
 import * as random from "@cdktf/provider-random"
+import * as Null from '@cdktf/provider-null';
+
 import MyMessageStore from "./constructs/my-message-store";
 import MyBaseInfra from "./constructs/my-base-infra";
 import MyLambdaApp from "./constructs/my-lambda-app";
 import MyLambdaAggregator from "./constructs/my-lambda-aggregator";
 import MyDynamoDbTable from "./constructs/my-dynamo-db-table";
 import MyLambdaViewApp from "./constructs/my-lambda-view-app";
+import MyUiApp from "./constructs/my-ui-app";
 
 // TODO: Check overall naming conventions, do we really need to add id ourselves everywhere?
 class MyStack extends TerraformStack {
@@ -20,6 +23,8 @@ class MyStack extends TerraformStack {
             region: 'us-east-1'
         });
 
+        new Null.provider.NullProvider(this, `${id}-null-provider`, {});
+
         new random.provider.RandomProvider(this, `${id}-random-provider`, {});
 
         // S3 backend for state
@@ -29,8 +34,12 @@ class MyStack extends TerraformStack {
             region: awsProvider.region,
         });
 
+        const myUiApp = new MyUiApp(this, `${id}-ui-app`)
+
         // resources
-        const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`);
+        const myBaseInfra = new MyBaseInfra(this, `${id}-base-infra`, {
+            allowOrigins: [`https://${myUiApp.bucket.bucketDomainName}`, 'http://127.0.0.1:5174']
+        });
 
         // TODO: Move message store to base infra?
         const myMessageStore = new MyMessageStore(this, "${id}-my-message-store");

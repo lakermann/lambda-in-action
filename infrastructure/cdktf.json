@@ -4,7 +4,8 @@
   "projectId": "33317c59-678d-4256-a3c4-1329f23b0a8e",
   "sendCrashReports": "false",
   "terraformProviders": [
-    "hashicorp/aws@4.36.1"
+    "hashicorp/aws@4.36.1",
+    "null@~> 3.2.0"
   ],
   "terraformModules": [],
   "context": {

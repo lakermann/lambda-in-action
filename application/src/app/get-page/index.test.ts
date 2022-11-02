@@ -7,26 +7,26 @@ import {
 
 const {handlerCreator} = require('./index.ts');
 
-describe('RecordViewingsHandler', () => {
+describe('GetPageHandler', () => {
 
-    const documentClientPutMock = jest.fn();
+    const documentClientGetMock = jest.fn();
 
     const documentClientMock = {
-        put: documentClientPutMock,
+        get: documentClientGetMock,
     };
 
     const handler = handlerCreator(documentClientMock);
 
     beforeEach(() => {
-        documentClientPutMock.mockReset();
+        documentClientGetMock.mockReset();
     });
 
-    test('missing videoId fails and API call returns status 400', () => {
+    test('missing pageId fails and API call returns status 400', () => {
         const event = createTestEvent(undefined, 'test-trace-id', 'test-user-id');
         const apiGatewayProxyResultPromise = handler(event);
 
         return expect(apiGatewayProxyResultPromise).resolves.toEqual({
-            body: "{\"message\":\"Missing 'videoId' parameter in path\"}",
+            body: "{\"message\":\"Missing 'pageId' parameter in path\"}",
             headers: {
                 "content-type": "application/json"
             },
@@ -34,15 +34,16 @@ describe('RecordViewingsHandler', () => {
         });
     });
 
-    test('message saving in DynamoDB fails and API call returns status 500', () => {
-        documentClientPutMock.mockImplementation(() => {
+
+    test('fetching an page from DynamoDB fails and API call returns status 500', () => {
+        documentClientGetMock.mockImplementation(() => {
             return {
                 promise() {
                     return Promise.reject(new Error('DynamoDB call failed'));
                 }
             };
         })
-        const event = createTestEvent('test-video-id', 'test-trace-id', 'test-user-id');
+        const event = createTestEvent('test-page-id', 'test-trace-id', 'test-user-id');
         const apiGatewayProxyResultPromise = handler(event);
 
         return expect(apiGatewayProxyResultPromise).resolves.toEqual({
@@ -54,29 +55,50 @@ describe('RecordViewingsHandler', () => {
         });
     });
 
-    test('message is saved in DynamoDB and API call returns successfully', () => {
-        documentClientPutMock.mockImplementation(() => {
+    test('fetching an page that does not exists and API call returns status 404', () => {
+        documentClientGetMock.mockImplementation(() => {
             return {
                 promise() {
                     return Promise.resolve({});
                 }
             };
         })
-
-        const event = createTestEvent('test-video-id', 'test-trace-id', 'test-user-id');
+        const event = createTestEvent('test-page-id', 'test-trace-id', 'test-user-id');
         const apiGatewayProxyResultPromise = handler(event);
 
-        expect(documentClientPutMock.mock.calls.length).toBe(1);
-        expect(documentClientPutMock.mock.calls[0][0].TableName).toBe('messages');
-        expect(documentClientPutMock.mock.calls[0][0].Item.id).toBeDefined();
-        expect(documentClientPutMock.mock.calls[0][0].Item.type).toBe('VideoViewed');
-        expect(documentClientPutMock.mock.calls[0][0].Item.metadata.traceId).toBe('test-trace-id');
-        expect(documentClientPutMock.mock.calls[0][0].Item.metadata.userId).toBe('test-user-id');
-        expect(documentClientPutMock.mock.calls[0][0].Item.data.videoId).toBe('test-video-id');
-        expect(documentClientPutMock.mock.calls[0][0].Item.data.userId).toBe('test-user-id');
+        return expect(apiGatewayProxyResultPromise).resolves.toEqual({
+            body: "{\"message\":\"{\\\"message\\\":\\\"'pageId' not found\\\"}\"}",
+            headers: {
+                "content-type": "application/json"
+            },
+            statusCode: 404,
+        });
+    });
+
+    test('page is fetched from DynamoDB and API call returns successfully', () => {
+        documentClientGetMock.mockImplementation(() => {
+            return {
+                promise() {
+                    return Promise.resolve({
+                        Item: {
+                            page_data: {videoswatched: 10},
+                            page_name: 'test-page-id',
+                        }
+                    });
+                }
+            };
+        })
+
+        const event = createTestEvent('test-page-id', 'test-trace-id', 'test-user-id');
+        const apiGatewayProxyResultPromise = handler(event);
+
+        expect(documentClientGetMock.mock.calls.length).toBe(1);
+        expect(documentClientGetMock.mock.calls[0][0].TableName).toBe('pages');
+        expect(documentClientGetMock.mock.calls[0][0].Key).toBeDefined();
+        expect(documentClientGetMock.mock.calls[0][0].Key.page_name).toBe('test-page-id');
 
         return expect(apiGatewayProxyResultPromise).resolves.toEqual({
-            body: "",
+            body: "{\"page_data\":{\"videoswatched\":10},\"page_name\":\"test-page-id\"}",
             headers: {
                 "content-type": "application/json"
             },
@@ -84,7 +106,7 @@ describe('RecordViewingsHandler', () => {
         });
     });
 
-    const createTestEvent = (videoId: string|undefined, traceId: string, userId: string): APIGatewayProxyEvent => {
+    const createTestEvent = (pageId: string | undefined, traceId: string, userId: string): APIGatewayProxyEvent => {
         const identity: APIGatewayEventIdentity = {
             accessKey: null,
             accountId: null,
@@ -127,7 +149,7 @@ describe('RecordViewingsHandler', () => {
             isBase64Encoded: false,
             path: "",
             pathParameters: {
-                videoId: videoId
+                pageId: pageId
             },
             queryStringParameters: null,
             multiValueQueryStringParameters: null,

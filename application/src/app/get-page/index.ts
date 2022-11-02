@@ -23,13 +23,23 @@ const handlerCreator = (dynamo: DynamoDB.DocumentClient) => async (event: APIGat
         const page = await dynamo
             .get({
                 TableName: "pages", // TODO: Extract als environment variable?
-                Key: {"page_name": "home"}
+                Key: {"page_name": pageId}
             }).promise();
+
+        if (page.Item == null){
+            return {
+                statusCode: 404,
+                headers: {"content-type": "application/json"},
+                body: JSON.stringify({
+                    message: JSON.stringify({message: "'pageId' not found"}),
+                }),
+            };
+        }
 
         return {
             statusCode: 200,
             headers: {"content-type": "application/json"},
-            body: JSON.stringify(page),
+            body: JSON.stringify(page.Item),
         };
 
     } catch (error) {

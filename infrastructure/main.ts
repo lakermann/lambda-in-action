@@ -10,6 +10,7 @@ import MyBaseInfra from "./constructs/my-base-infra";
 import MyLambdaApp from "./constructs/my-lambda-app";
 import MyLambdaAggregator from "./constructs/my-lambda-aggregator";
 import MyDynamoDbTable from "./constructs/my-dynamo-db-table";
+import MyLambdaViewApp from "./constructs/my-lambda-view-app";
 import MyUiApp from "./constructs/my-ui-app";
 
 // TODO: Check overall naming conventions, do we really need to add id ourselves everywhere?
@@ -65,6 +66,15 @@ class MyStack extends TerraformStack {
             routeKey: 'POST /videos/{videoId}',
             s3Bucket: myBaseInfra.s3Bucket,
             messageStore: myMessageStore,
+            apiGateway: myBaseInfra.apiGateway,
+        });
+
+        const getPageAppName = 'get-page';
+        new MyLambdaViewApp(this, `${id}-lambda-view-app-${getPageAppName}`, {
+            name: getPageAppName,
+            routeKey: 'GET /pages/{pageId}',
+            s3Bucket: myBaseInfra.s3Bucket,
+            viewData: myDynamoDbTablePageData,
             apiGateway: myBaseInfra.apiGateway,
         });
 

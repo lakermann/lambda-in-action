@@ -23,7 +23,7 @@ export class MyApiGateway extends Construct {
             protocolType: 'HTTP',
             corsConfiguration: {
                 allowOrigins: config.allowOrigins,
-                allowMethods: ['POST'],
+                allowMethods: ['GET','POST'],
                 allowHeaders: ['traceid','userid','x-api-key'],
             }
         });

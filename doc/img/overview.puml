@@ -1,35 +1,51 @@
-@startuml Overview
+@startuml "Overview"
 
 !define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v14.0/dist
 !include AWSPuml/AWSCommon.puml
+!include AWSPuml/AWSSimplified.puml
 !include AWSPuml/General/Users.puml
+!include AWSPuml/General/Client.puml
+!include AWSPuml/Groups/AWSCloud.puml
+!include AWSPuml/Storage/SimpleStorageService.puml
 !include AWSPuml/ApplicationIntegration/APIGateway.puml
-!include AWSPuml/Analytics/KinesisDataStreams.puml
 !include AWSPuml/Compute/Lambda.puml
 !include AWSPuml/Database/DynamoDB.puml
-
-left to right direction
+!include AWSPuml/Analytics/KinesisDataStreams.puml
 
 title "Overview"
+left to right direction
+
+skinparam rectangle {
+    BackgroundColor AWS_BG_COLOR
+    BorderColor transparent
+}
 
 Users(users, "Users", "...")
-APIGateway(apiGateway, "API", "...")
-Lambda(appRecordViewings, "record-viewings", "record video viewings")
-DynamoDB(messageStore, "Message Store", "message table")
-KinesisDataStreams(eventStream, "Stream", "...")
-Lambda(app1, "Aggregator", "...")
-Lambda(app2, "Component", "...")
-Lambda(app3, "...", "...")
-Lambda(appApiTest, "api-test", "hello from lambda")
-Lambda(authorizer, "authorizer", "api key validation")
+Client(browser, "Browser", "...")
+AWSCloudGroup(cloud){
+    SimpleStorageService(videoUi, "Video UI", "...")
+    APIGateway(apiGateway, "REST API", "...")
+    Lambda(authorizer, "Authorizer", "...")
+    Lambda(apiTest, "API Test", "...")
+    Lambda(recordViewings, "Record Viewings", "...")
+    DynamoDB(messagesTable, "Messages Table", "...")
+    KinesisDataStreams(dataStream, "Data Stream", "...")
+    Lambda(aggregateVideosViewed, "Aggregate Total Videos Viewed", "...")
+    DynamoDB(pagesTable, "Pages Table", "...")
+    Lambda(getPage, "Get page", "...")
 
-users --> apiGateway
-apiGateway --> authorizer
-apiGateway --> appApiTest
-apiGateway --> appRecordViewings
-appRecordViewings --> messageStore
-messageStore --> eventStream
-eventStream --> app1
-eventStream --> app2
-eventStream --> app3
+    users --> browser
+    browser --> videoUi
+    browser --> apiGateway
+    apiGateway --> authorizer
+    apiGateway --> apiTest
+    apiGateway --> recordViewings
+    apiGateway --> getPage
+    getPage -----> pagesTable
+    recordViewings --> messagesTable
+    messagesTable --> dataStream
+    dataStream --> aggregateVideosViewed
+    aggregateVideosViewed --> pagesTable
+}
+
 @enduml

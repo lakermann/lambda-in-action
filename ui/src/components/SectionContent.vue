@@ -64,10 +64,8 @@ interface Videos {
 }
 
 interface PagesHomeResponse {
-  Item: {
-    page_data: { videoswatched: number };
-    page_name: string;
-  };
+  page_data: { videoswatched: number };
+  page_name: string;
 }
 
 export default defineComponent({
@@ -112,7 +110,7 @@ export default defineComponent({
     this.polling = setInterval(async () => {
       try {
         const {data} = await axios.get<PagesHomeResponse>(`/pages/home`);
-        this.videoswatched = data.Item.page_data.videoswatched;
+        this.videoswatched = data.page_data.videoswatched;
       } catch (error) {
         console.log("unexpected error: ", error);
       }

@@ -35,7 +35,7 @@ describe('GetPageHandler', () => {
     });
 
 
-    test('fetching an page from DynamoDB fails and API call returns status 500', () => {
+    test('fetching a page from DynamoDB fails and API call returns status 500', () => {
         documentClientGetMock.mockImplementation(() => {
             return {
                 promise() {
@@ -55,7 +55,7 @@ describe('GetPageHandler', () => {
         });
     });
 
-    test('fetching an page that does not exists and API call returns status 404', () => {
+    test('fetching a page that does not exists and API call returns status 404', () => {
         documentClientGetMock.mockImplementation(() => {
             return {
                 promise() {

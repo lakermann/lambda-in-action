@@ -1,6 +1,6 @@
-# λ in Action
+# λ in Action [![Build](https://github.com/lakermann/lambda-in-action/actions/workflows/main.yml/badge.svg)](https://github.com/lakermann/lambda-in-action/actions/workflows/main.yml)
 
-![Apply Stack after PR is merged](https://github.com/lakermann/lambda-in-action/actions/workflows/main.yml/badge.svg)
+_by [Samuel Bucheli](https://github.com/SamuelBucheliZ), [Stefan Friedli](https://github.com/sfriedli) and [Lukas Akermann](https://github.com/lakermann)_
 
 > Goal: Implement an AWS Lambda application architecture on code from Garfolo's Book «Practical Microservices».
 

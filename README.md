@@ -1,6 +1,6 @@
 # λ in Action [![Build](https://github.com/lakermann/lambda-in-action/actions/workflows/main.yml/badge.svg)](https://github.com/lakermann/lambda-in-action/actions/workflows/main.yml)
 
-_by [Samuel Bucheli](https://github.com/SamuelBucheliZ), [Stefan Friedli](https://github.com/sfriedli) and [Lukas Akermann](https://github.com/lakermann), October 2024_
+_by [Samuel Bucheli](https://github.com/SamuelBucheliZ), [Stefan Friedli](https://github.com/sfriedli) and [Lukas Akermann](https://github.com/lakermann), October 2022_
 
 > Goal: Implement an AWS Lambda application architecture on code from Garfolo's Book «Practical Microservices».
 
